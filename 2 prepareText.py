@@ -1,6 +1,7 @@
 import csv
 import re
 import json
+from tqdm import tqdm
 
 import requests
 from bs4 import BeautifulSoup
@@ -18,14 +19,13 @@ import matplotlib.pyplot as plt
 # 3. Record the specific sections where each paragraph is located - WHY?
 # 4. Obtain paragraph length, ie number of words
 
-input = open("data/fomcLinks.txt", "r")
-links = csv.DictReader(input, delimiter=";")
-minutes = []
 
-for row in links:
+minutes = json.load(open("data/1 fomcLinks.txt", "r"))
+
+for row in tqdm(minutes):
     if not "minutes" in row["link"].lower() or not row["type"] == "htm":
         continue
-    soup = BeautifulSoup(requests.get(row["link"]).content, "html.parser")
+    soup = BeautifulSoup(requests.get("https://www.federalreserve.gov"+row["link"]).content, "html.parser")
     text = soup.find("div", id="content").get_text() if soup.find("div", id="content") != None else soup.find("body").get_text()
 
     # 0 GENERAL CLEANING (not in JeWu)
@@ -36,6 +36,13 @@ for row in links:
     while '  ' in text:
         text = text.replace('  ', ' ')  # Remove extra spaces
 
+    minutes.append({**row, "text": text})
+
+    continue
+
+    # Don't split paragraphs, whole text needed for LM approach
+    # Downloading text might also not be a good idea
+
     # 2 Break document into paragraphs with min length 100 characters
     paragraphs = text.split("\n")
     for i, par in enumerate(paragraphs):
@@ -43,7 +50,6 @@ for row in links:
             paragraphs.pop(i)
 
     minutes.append({**row, "paragraphs": paragraphs})
-    print(minutes[-1])
 
     # 1 Remove admin section - TODO
     # Based on a histogram of where the word "vote" is located in the document,
@@ -54,5 +60,4 @@ for row in links:
     #         print(round(i/len(paragraphs)*100), "% ", end="")
     # print()
 
-    with open("data/minutesProcessed.txt", "w", encoding="UTF-8") as filehandle:
-        json.dump(minutes, filehandle)
+json.dump(minutes, open("data/2 minutesProcessed.txt", "w", encoding="UTF-8"))

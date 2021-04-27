@@ -17,7 +17,7 @@ for cont in containers:
     for linkTag in cont.find_all("a"):
         year = cont.find(class_="panel-heading").get_text(strip=True).replace("FOMC Meetings", "").strip()
         if linkTag != None and linkTag.has_attr("href"):  # and "minutes" in linkTag["href"].lower():
-            newEntry = {"year": year, "meeting": "", "label": linkTag.get_text(), "link": "https://www.federalreserve.gov"+linkTag["href"]}
+            newEntry = {"year": year, "meeting": "", "label": linkTag.get_text(), "link": linkTag["href"]}
             data.append(newEntry)
 
 
@@ -41,7 +41,7 @@ for link in yearList:
         for linkTag in cont.find_all("a"):
             meeting = cont.find(class_="panel-heading").get_text(strip=True)
             if linkTag != None:  # and "minutes" in linkTag["href"].lower():
-                newEntry = {"year": year, "meeting": meeting, "label": linkTag.get_text(), "link": "https://www.federalreserve.gov"+linkTag["href"]}
+                newEntry = {"year": year, "meeting": meeting, "label": linkTag.get_text(), "link": linkTag["href"]}
                 data.append(newEntry)
                 # print("Extracted information: ", newEntry)
     print(len(data))
@@ -53,5 +53,5 @@ for i, entry in enumerate(data):
     data[i] = entry
 
 # Save data to textfile
-with open("data/fomcLinks.txt", "w") as filehandle:
-    json.dump(data, filehandle)
+f = open("data/1 fomcLinks.txt", "w")
+json.dump(data, f)
