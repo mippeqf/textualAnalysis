@@ -2,7 +2,7 @@ import csv
 import re
 import json
 from tqdm import tqdm
-
+import pickle
 import requests
 from bs4 import BeautifulSoup
 import matplotlib.pyplot as plt
@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 # 4. Obtain paragraph length, ie number of words
 
 
-minutes = json.load(open("data/1 fomcLinks.txt", "r"))
+minutes = pickle.load(open("data/1fomcLinks", "rb"))
 
 for row in tqdm(minutes):
     if not "minutes" in row["link"].lower() or not row["type"] == "htm":
@@ -60,4 +60,4 @@ for row in tqdm(minutes):
     #         print(round(i/len(paragraphs)*100), "% ", end="")
     # print()
 
-json.dump(minutes, open("data/2 minutesProcessed.txt", "w", encoding="UTF-8"))
+pickle.dump(open("data/2minutesProcessed", "wb"))

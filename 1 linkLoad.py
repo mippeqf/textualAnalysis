@@ -1,6 +1,7 @@
 import json
 import requests
 from bs4 import BeautifulSoup
+import pickle
 
 
 # TODO: Add parent label to labels containing "HTML" or "PDF"
@@ -53,5 +54,4 @@ for i, entry in enumerate(data):
     data[i] = entry
 
 # Save data to textfile
-f = open("data/1 fomcLinks.txt", "w")
-json.dump(data, f)
+pickle.dump(data, open("data/1fomcLinks", "wb"))

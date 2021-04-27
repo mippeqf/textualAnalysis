@@ -13,15 +13,43 @@
 
 import pysentiment2 as ps
 import json
+from bs4 import BeautifulSoup
+import requests
+import csv
+import pickle
 
-minutes = json.load(open("data/2 minutesProcessed.txt", "r"))
+minutes = pickle.load(open("data/1fomcLinks", "rb"))
 # Minutes are a list of dictionaries with fields year, meeting, link, type, paragraphs!
 hiv4 = ps.HIV4()
-
-for doc in minutes:
-    tokens = hiv4.tokenize(minutes)  # text can be tokenized by other ways however, dict in HIV4 is preprocessed by the default tokenizer in the library
-    score = hiv4.get_score(tokens)
-
 lm = ps.LM()
-tokens = lm.tokenize(text)
-score = lm.get_score(tokens)
+
+minutesNew = []
+
+for i, row in enumerate(minutes):
+    if row["year"] == "FOMC Search":
+        continue
+    if int(row["year"]) < 2020:
+        break
+    if not "minutes" in row["link"].lower() or not row["type"] == "htm":
+        continue
+    soup = BeautifulSoup(requests.get("https://www.federalreserve.gov"+row["link"]).content, "html.parser")
+    text = soup.find("div", id="content").get_text() if soup.find("div", id="content") != None else soup.find("body").get_text()
+
+    # 0 GENERAL CLEANING (not in JeWu)
+    text = text.strip()  # Remove white space at the beginning and end
+    text = text.replace('\r', '')  # Replace the \r with null
+    text = text.replace('&nbsp;', ' ')  # Replace "&nbsp;" with space.
+    text = text.replace('&#160;', ' ')  # Replace "&#160;" with space.
+    while '  ' in text:
+        text = text.replace('  ', ' ')  # Remove extra spaces
+
+    tokens = hiv4.tokenize(text)  # text can be tokenized by other ways however, dict in HIV4 is preprocessed by the default tokenizer in the library
+    score = hiv4.get_score(tokens)
+    minutesNew.append({**row, "hiv4": score})
+    print(i, "of", len(minutes), row["year"], " Harvard score: ", score)
+    tokens = lm.tokenize(text)
+    score = lm.get_score(tokens)
+    minutesNew.append({**row, "lm": score})
+    print(i, "of", len(minutes), row["year"], " LM score: ", score)
+
+pickle.dump(minutesNew, open("data/3toneAnalysisDump", "wb"))
