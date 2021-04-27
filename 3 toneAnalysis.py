@@ -45,6 +45,6 @@ for i, row in enumerate(minutes):
     lmscore = lm.get_score(tokens)
     minutesNew.append({**row, "hvPos": hiv4score["Positive"], "hvNeg": hiv4score["Negative"], "hvPol": hiv4score["Polarity"], "hvSub": hiv4score["Subjectivity"],
                       "lmPos": lmscore["Positive"], "lmNeg": lmscore["Negative"], "lmPol": lmscore["Polarity"], "lmSub": lmscore["Subjectivity"], })
-    print(i, "of", len(minutes), row["year"], " Harvard score: ", hiv4score, " LM score: ", lmscore)
+    print(i, "of", len(minutes), row["year"])
 
 pickle.dump(minutesNew, open("data/3toneAnalysisDump", "wb"))
