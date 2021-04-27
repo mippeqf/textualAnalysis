@@ -25,7 +25,7 @@ minutes = pickle.load(open("data/1fomcLinks", "rb"))
 for row in tqdm(minutes):
     if not "minutes" in row["link"].lower() or not row["type"] == "htm":
         continue
-    soup = BeautifulSoup(requests.get("https://www.federalreserve.gov"+row["link"]).content, "html.parser")
+    soup = BeautifulSoup(requests.get(row["link"]).content, "html.parser")
     text = soup.find("div", id="content").get_text() if soup.find("div", id="content") != None else soup.find("body").get_text()
 
     # 0 GENERAL CLEANING (not in JeWu)
