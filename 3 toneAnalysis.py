@@ -26,10 +26,6 @@ lm = ps.LM()
 minutesNew = []
 
 for i, row in enumerate(minutes):
-    if row["year"] == "FOMC Search":
-        continue
-    if int(row["year"]) < 2020:
-        break
     if not "minutes" in row["link"].lower() or not row["type"] == "htm":
         continue
     soup = BeautifulSoup(requests.get("https://www.federalreserve.gov"+row["link"]).content, "html.parser")
@@ -44,12 +40,11 @@ for i, row in enumerate(minutes):
         text = text.replace('  ', ' ')  # Remove extra spaces
 
     tokens = hiv4.tokenize(text)  # text can be tokenized by other ways however, dict in HIV4 is preprocessed by the default tokenizer in the library
-    score = hiv4.get_score(tokens)
-    minutesNew.append({**row, "hiv4": score})
-    print(i, "of", len(minutes), row["year"], " Harvard score: ", score)
+    hiv4score = hiv4.get_score(tokens)
     tokens = lm.tokenize(text)
-    score = lm.get_score(tokens)
-    minutesNew.append({**row, "lm": score})
-    print(i, "of", len(minutes), row["year"], " LM score: ", score)
+    lmscore = lm.get_score(tokens)
+    minutesNew.append({**row, "hvPos": hiv4score["Positive"], "hvNeg": hiv4score["Negative"], "hvPol": hiv4score["Polarity"], "hvSub": hiv4score["Subjectivity"],
+                      "lmPos": lmscore["Positive"], "lmNeg": lmscore["Negative"], "lmPol": lmscore["Polarity"], "lmSub": lmscore["Subjectivity"], })
+    print(i, "of", len(minutes), row["year"], " Harvard score: ", hiv4score, " LM score: ", lmscore)
 
 pickle.dump(minutesNew, open("data/3toneAnalysisDump", "wb"))
