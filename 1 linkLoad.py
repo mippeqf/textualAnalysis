@@ -67,12 +67,13 @@ for link in archiveYearsLinks:
         link = None
         release = None
         for tag in linkTags:
-            if tag["href"].lower().find("minutes") > -1:  # That's the right one
+            if tag["href"].lower().find("minutes") > -1 and tag["href"].lower().find(".htm") > -1:  # That's the right one
                 link = tag["href"]
                 # Pretty dirty way to extract release date, won't work if keyword "Released" appears twice
                 release = tag.parent.parent.get_text(strip=True)
                 release = release.split("(Released ")[-1].split(")")[0] if "Release" in release else None
                 print(tag.parent.parent.get_text(strip=True))
+                break
             else:
                 continue
         if link == None or release == None:
