@@ -18,8 +18,9 @@ import matplotlib.pyplot as plt
 # 3. Record the specific sections where each paragraph is located - WHY?
 # 4. Obtain paragraph length, ie number of words
 
-input = open("fomcLinks.txt", "r")
+input = open("data/fomcLinks.txt", "r")
 links = csv.DictReader(input, delimiter=";")
+minutes = []
 
 for row in links:
     if not "minutes" in row["link"].lower() or not row["type"] == "htm":
@@ -34,11 +35,6 @@ for row in links:
     text = text.replace('&#160;', ' ')  # Replace "&#160;" with space.
     while '  ' in text:
         text = text.replace('  ', ' ')  # Remove extra spaces
-    text = re.sub(r'(<[^>]*>)|'  # Remove content within HTML tags
-                  '([_]+)|'  # Remove series of underscores
-                  '(http[^\s]+)|'  # Remove website addresses
-                  '((a|p)\.m\.)',  # Remove "a.m" and "p.m."
-                  '', text)  # Replace with null
 
     # 2 Break document into paragraphs with min length 100 characters
     paragraphs = text.split("\n")
@@ -46,19 +42,17 @@ for row in links:
         if len(par) < 100:
             paragraphs.pop(i)
 
-    # 1 Remove admin section
+    minutes.append({**row, "paragraphs": paragraphs})
+    print(minutes[-1])
+
+    # 1 Remove admin section - TODO
     # Based on a histogram of where the word "vote" is located in the document,
     # a cutoff point of 0.6 is chosen
-    print(row["year"], end=": ")
-    for i, par in enumerate(paragraphs):
-        if par.find("vote") != -1:
-            print(round(i/len(paragraphs)*100), "% ", end="")
-    print()
+    # print(row["year"], end=": ")
+    # for i, par in enumerate(paragraphs):
+    #     if par.find("vote") != -1:
+    #         print(round(i/len(paragraphs)*100), "% ", end="")
+    # print()
 
-    continue
-    f = open("data/testText.txt", "w", encoding="UTF-8")
-    f.write(text)
-    f.close()
-    break
-
-exit()
+    with open("data/minutesProcessed.txt", "w", encoding="UTF-8") as filehandle:
+        json.dump(minutes, filehandle)

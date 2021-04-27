@@ -1,5 +1,4 @@
-import csv
-import re
+import json
 import requests
 from bs4 import BeautifulSoup
 
@@ -34,7 +33,7 @@ for link in yearList:
     soup = BeautifulSoup(requests.get(link).content, features="html.parser")
     year = soup.find("h3").get_text()  # not fool proof
     print("Archive year: ", year, link)
-    if int(year) < 2000:
+    if int(year) < 1993:
         break
     containers = soup.find_all("div", class_="panel")
     print("Number of containers: ", len(containers))
@@ -54,9 +53,5 @@ for i, entry in enumerate(data):
     data[i] = entry
 
 # Save data to textfile
-with open("fomcLinks.txt", "w", newline="") as out:
-    writer = csv.DictWriter(out, fieldnames=["year", "meeting", "label", "link", "type"], delimiter=";")
-    writer.writeheader()
-    writer.writerows(data)
-
-# -----------------------------------------------------------------------------------------------------------
+with open("data/fomcLinks.txt", "w") as filehandle:
+    json.dump(data, filehandle)

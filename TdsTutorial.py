@@ -10,12 +10,29 @@ import matplotlib.pyplot as plt
 import spacy
 from pprint import pprint
 from wordcloud import WordCloud
-nlp = spacy.load("en_core_web_lg")
+nlp = spacy.load("en_core_web_sm")
 nlp.max_length = 1500000  # Ensure sufficient memory
 
-recentList = "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
-archiveList = "https://www.federalreserve.gov/monetarypolicy/fomc_historical_year.htm"
+# Define URLs for the specific FOMC minutes
+URLPath = r'https://www.federalreserve.gov/monetarypolicy/fomcminutes'  # From 2008 onward
+URLExt = r'.htm'
 
+# List for FOMC minutes from 2007 onward
+MinutesList = ['20071031', '20071211',  # 2007 FOMC minutes (part-year on new URL format)
+               '20080130', '20080318', '20080430', '20080625', '20080805', '20080916', '20081029', '20081216',  # 2008 FOMC minutes
+               '20090128', '20090318', '20090429', '20090624', '20090812', '20090923', '20091104', '20091216',  # 2009 FOMC minutes
+               '20100127', '20100316', '20100428', '20100623', '20100810', '20100921', '20101103', '20101214',  # 2010 FOMC minutes
+               '20110126', '20110315', '20110427', '20110622', '20110809', '20110921', '20111102', '20111213',  # 2011 FOMC minutes
+               '20120125', '20120313', '20120425', '20120620', '20120801', '20120913', '20121024', '20121212',  # 2012 FOMC minutes
+               '20130130', '20133020', '20130501', '20130619', '20130731', '20130918', '20131030', '20131218',  # 2013 FOMC minutes
+               '20140129', '20140319', '20140430', '20140618', '20140730', '20140917', '20141029', '20141217',  # 2014 FOMC minutes
+               '20150128', '20150318', '20150429', '20150617', '20150729', '20150917', '20151028', '20151216',  # 2015 FOMC minutes
+               '20160127', '20160316', '20160427', '20160615', '20160727', '20160921', '20161102', '20161214',  # 2016 FOMC minutes
+               '20172001', '20170315', '20170503', '20170614', '20170726', '20170920', '20171101', '20171213',  # 2017 FOMC minutes
+               '20180131', '20180321', '20180502', '20180613', '20180801', '20180926', '20181108', '20181219',  # 2018 FOMC minutes
+               '20190130', '20190320', '20190501', '20190619', '20190731', '20190918', '20191030', '20191211',  # 2019 FOMC minutes
+               '20200129', '20200315', '20200429', '20200610', '20200729'  # 2020 FOMC minutes
+               ]
 
 FOMCMinutes = []  # A list of lists to form the corpus
 FOMCWordCloud = []  # Single list version of the corpus for WordCloud
@@ -32,8 +49,8 @@ def PrepareCorpus(urlpath, urlext, minslist, minparalength):
 
     for minutes in minslist:
 
-        response = requests.get(f'https://www.federalreserve.gov/monetarypolicy/fomcminutes{date}.htm')  # Get the URL response
-        soup = BeautifulSoup(response.content, 'lxml')  # Parse the response
+        response = requests.get(urlpath + minutes + urlext)  # Get the URL response
+        soup = BeautifulSoup(response.content, 'html.parser')  # Parse the response
 
         # Extract minutes content and convert to string
         minsTxt = str(soup.find("div", {"id": "content"}))  # Contained within the 'div' tag
@@ -88,11 +105,19 @@ def PrepareCorpus(urlpath, urlext, minslist, minparalength):
 # Prepare corpus
 FOMCMinutes, FOMCWordCloud, FOMCTopix = PrepareCorpus(urlpath=URLPath, urlext=URLExt, minslist=MinutesList, minparalength=200)
 
+
+#####################################################################################
+# Wordcloud
+#####################################################################################
 # Generate and plot WordCloud for full corpus
 wordcloud = WordCloud(background_color="white").generate(','.join(FOMCWordCloud))  # NB. 'join' method used to convert the list to text format
 plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis("off")
 plt.show()
+
+#####################################################################################
+# LDA
+#####################################################################################
 
 # Form dictionary by mapping word IDs to words
 ID2word = corpora.Dictionary(FOMCMinutes)
@@ -141,6 +166,11 @@ plt.xlabel("Alpha")
 plt.ylabel("Coherence score")
 plt.legend(("coherence"), loc='best')
 plt.show()
+
+
+#####################################################################################
+# Analysis and interpretation of topic mix
+#####################################################################################
 
 # Generate weighted topic proportions across all paragraphs in the corpus
 para_no = 0  # Set document counter
