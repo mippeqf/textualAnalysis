@@ -22,7 +22,7 @@ for pnl in panels:
         try:
             year = pnl.find(class_="panel-heading").get_text(strip=True).replace("FOMC Meetings", "").strip()
             release = minutesBox.get_text(strip=True).split("Released ")[-1].replace(")", "")
-            release = datetime.strptime(release, "%B %d, %Y")
+            release = datetime.strptime(release, "%B %d, %Y").date()
             link = minutesBox.find("a", text="HTML")["href"]
             newEntry = {"year": year, "release": release, "link": "https://www.federalreserve.gov"+link}
             print(newEntry)
@@ -40,7 +40,7 @@ print("-------------------------------------------")
 def try_parsing_date(text):
     for fmt in ("%B %d, %Y", "%b %d, %Y"):
         try:
-            return datetime.strptime(text, fmt)
+            return datetime.strptime(text, fmt).date()
         except ValueError:
             pass
     raise ValueError('no valid date format found for', text)

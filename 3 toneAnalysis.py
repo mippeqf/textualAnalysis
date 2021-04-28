@@ -26,18 +26,8 @@ lm = ps.LM()
 minutesNew = []
 
 for i, row in enumerate(minutes):
-    if not "minutes" in row["link"].lower() or not row["type"] == "htm":
-        continue
     soup = BeautifulSoup(requests.get(row["link"]).content, "html.parser")
     text = soup.find("div", id="content").get_text() if soup.find("div", id="content") != None else soup.find("body").get_text()
-
-    # 0 GENERAL CLEANING (not in JeWu)
-    text = text.strip()  # Remove white space at the beginning and end
-    text = text.replace('\r', '')  # Replace the \r with null
-    text = text.replace('&nbsp;', ' ')  # Replace "&nbsp;" with space.
-    text = text.replace('&#160;', ' ')  # Replace "&#160;" with space.
-    while '  ' in text:
-        text = text.replace('  ', ' ')  # Remove extra spaces
 
     tokens = hiv4.tokenize(text)  # text can be tokenized by other ways however, dict in HIV4 is preprocessed by the default tokenizer in the library
     hiv4score = hiv4.get_score(tokens)
