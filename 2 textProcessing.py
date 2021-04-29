@@ -25,6 +25,7 @@ minutes = pickle.load(open("data/1fomcLinks", "rb"))
 # more of a "derivative question" instead of the main focus.
 filteredParagraphs = []
 minutesNew = []
+rawParagraphs = []  # Tokenized paragraphs without filtering - robustness test
 
 for row in tqdm(minutes):
 
@@ -46,10 +47,12 @@ for row in tqdm(minutes):
         for token in paraClassified:
             if token.is_stop == False and token.is_punct == False and (token.pos_ == "NOUN" or token.pos_ == "ADJ" or token.pos_ == "VERB"):
                 filteredTokens.append(token.lemma_.lower())
+            rawParagraphs.append(token)
         filteredParagraphs.append(filteredTokens)
         documentLevelFilteredParagraphs.append(filteredTokens)
     minutesNew.append({**row, "filteredParagraphs": documentLevelFilteredParagraphs})
 
 # Preserve filtered paragraphs for further use
+pickle.dump(rawParagraphs, open("data/2rawParagraphs", "wb"))
 pickle.dump(filteredParagraphs, open("data/2filteredParagraphs", "wb"))
 pickle.dump(minutesNew, open("data/2documentlevelFilteredParagraphs", "wb"))
