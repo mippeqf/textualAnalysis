@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import pickle
 
-filteredParagraphs = pickle.load(open(""))
+filteredParagraphs = pickle.load(open("data/2filteredParagraphs", "rb"))
 
 # Flatten main list for word cloud
 flattenedList = [token for paragraph in filteredParagraphs for token in paragraph]

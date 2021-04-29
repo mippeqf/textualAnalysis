@@ -169,7 +169,7 @@ plt.show()
 
 
 #####################################################################################
-# Analysis and interpretation of topic mix
+# Fine tuning model parameters
 #####################################################################################
 
 # Generate weighted topic proportions across all paragraphs in the corpus
@@ -187,6 +187,10 @@ FOMCTopixDF = pd.DataFrame(FOMCTopix, columns=['Date', 'Weight', 'Inflation', 'T
 
 # Aggregate topic mix by minutes documents (weighted sum of paragraphs)
 TopixAggDF = pd.pivot_table(FOMCTopixDF, values=['Inflation', 'Topic 2', 'Consumption', 'Topic 4', 'Market', 'Topic 6', 'Topic 7', 'Policy'], index='Date', aggfunc=np.sum)
+
+#####################################################################################
+# Analysis and interpretation of topic mix
+#####################################################################################
 
 topic = 0  # Initialize counter
 while topic < NUM_topics:

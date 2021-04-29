@@ -52,4 +52,4 @@ for row in tqdm(minutes):
 
 # Preserve filtered paragraphs for further use
 pickle.dump(filteredParagraphs, open("data/2filteredParagraphs", "wb"))
-pickle.dump(filteredParagraphs, open("data/2documentlevelFilteredParagraphs", "wb"))
+pickle.dump(minutesNew, open("data/2documentlevelFilteredParagraphs", "wb"))
