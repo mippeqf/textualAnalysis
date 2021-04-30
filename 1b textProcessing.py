@@ -7,6 +7,7 @@
 
 # For LDA, use parameter "number of topics" N = 1 to test for whole-document relevance
 
+from gensim.models import Phrases
 import pickle
 from bs4 import BeautifulSoup
 from tqdm import tqdm
@@ -24,8 +25,8 @@ minutes = pickle.load(open("data/1fomcLinks", "rb"))
 # Differing fractions of paragraphs per document can be examiend over time, but that is
 # more of a "derivative question" instead of the main focus.
 filteredParagraphs = []
-minutesNew = []
-rawParagraphs = []  # Tokenized paragraphs without filtering - robustness test
+# minutesNew = []
+rawParagraphs = []  # Tokenized paragraphs without lemmatizing and type filtering - robustness test
 
 for row in tqdm(minutes):
 
@@ -44,15 +45,29 @@ for row in tqdm(minutes):
         # Run standard spacy classification pipeline (tokenization, identification of word type etc)
         paraClassified = nlp(para)
         filteredTokens = []
+        rawTokens = []
         for token in paraClassified:
             if token.is_stop == False and token.is_punct == False and (token.pos_ == "NOUN" or token.pos_ == "ADJ" or token.pos_ == "VERB"):
                 filteredTokens.append(token.lemma_.lower())
-            rawParagraphs.append(token)
+            rawTokens.append(token.lemma_.lower())
         filteredParagraphs.append(filteredTokens)
         documentLevelFilteredParagraphs.append(filteredTokens)
-    minutesNew.append({**row, "filteredParagraphs": documentLevelFilteredParagraphs})
+        rawParagraphs.append(rawTokens)
+    # minutesNew.append({**row, "filteredParagraphs": documentLevelFilteredParagraphs})
+
+# Add bigrams to the filteredParagraphs list
+# Actually not sure whether spacy does that out-of-the-box as well
+bigram = Phrases(filteredParagraphs, min_count=20)
+for i in range(len(filteredParagraphs)):
+    for token in bigram[filteredParagraphs[i]]:  # gensim uses the entire lemmatized paragraph as an index in the bigram list object for some reason
+        if "_" in token:  # Phrases object tacks bigrams onto the paragraph, so check through all to see whether there are any new ones
+            filteredParagraphs[i].append(token)  # If bigram is found, append to old paragraph
+# Has a minimum parameter, thus cannot work with the document-level version
 
 # Preserve filtered paragraphs for further use
 pickle.dump(rawParagraphs, open("data/2rawParagraphs", "wb"))
 pickle.dump(filteredParagraphs, open("data/2filteredParagraphs", "wb"))
-pickle.dump(minutesNew, open("data/2documentlevelFilteredParagraphs", "wb"))
+# pickle.dump(minutesNew, open("data/2documentlevelFilteredParagraphs", "wb")) # Doesn't contain bigrams
+
+# TODO Fine tune bigram parameter
+# TODO optional: admin section cutoff by occurence of word "vote"

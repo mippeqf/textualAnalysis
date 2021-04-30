@@ -5,4 +5,6 @@
 
 snscrape --jsonl --progress --max-results 1000 --since 2016-01-01 twitter-search "fomc" > data/twitter.json
 
-@REM FIX ENCODING !!
+@REM Got a bunch of non-Western characters - see https://dencode.com/en/string/unicode-escape
+@REM Kick tweets with more than 50% foreign characters? 
+@REM Analyze sentiment using LM dictionary? Azar use a library that outputs sentiment directly
