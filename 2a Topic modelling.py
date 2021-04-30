@@ -66,4 +66,5 @@ lda.print_topics(10, 10)
 print("---------------------------")
 lda.save("data/lda.model")
 
-# TODO Use TFIDF corpus instead of vanilla bag-of-words corpus
+# TODO Use TFIDF corpus instead of vanilla bag-of-words corpus (and figure out why that's better)
+# TODO Implement NMF

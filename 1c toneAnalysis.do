@@ -34,3 +34,5 @@ quietly eststo: reg return hvneg
 quietly eststo: reg return hvneg hvpos
 quietly eststo: reg return hvneg hvpos hvpol hvsub
 esttab, p r2
+
+// TODO figure out how to properly interpret these regressions - see Schmeling Wagner
