@@ -37,4 +37,8 @@ for i, row in enumerate(minutes):
                       "lmPos": lmscore["Positive"], "lmNeg": lmscore["Negative"], "lmPol": lmscore["Polarity"], "lmSub": lmscore["Subjectivity"], })
     print(i, "of", len(minutes), row["year"])
 
-pickle.dump(minutesNew, open("data/3toneAnalysisDump", "wb"))
+# Dump dataset containing timeseries of textual analysis to csv
+with open("data/dataExport.csv", "w", newline="") as f:
+    writer = csv.DictWriter(f, minutesNew[0].keys())
+    writer.writeheader()
+    writer.writerows(minutesNew)
