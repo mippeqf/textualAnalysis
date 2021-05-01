@@ -173,7 +173,7 @@ plt.show()
 
 
 #####################################################################################
-# Interpretation of topic mix
+# Interpretation of topic mix - Fig 1 in JeWu
 #####################################################################################
 
 # Generate weighted topic proportions across all paragraphs in the corpus

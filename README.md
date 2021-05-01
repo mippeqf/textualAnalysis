@@ -9,10 +9,11 @@ Clearly state how this thesis might contribute to the literature
 
 ## 1 Data
 
-### 1.1 Auxiliary data (LM dictionary, market)
+### 1.1 Data sources (LM dictionary, market, minutes)
 
 Downloaded from …
 Market data is from yahoo finance
+Details on characteristics of fomc minutes, only available in today's format since 1993. Include that one graphic from the fed publication here.
 
 ### 1.2 Preparation of textual data
 
@@ -26,15 +27,18 @@ Random minutes paragraph a. before processing b. after tokenization and lemmatiz
 
 ### 2.1 Tone computation
 
-Short description of dictionary-lookup process and
+Short description of dictionary-lookup process and aggregation to document-level net tone score
 
 ### 2.2 LDA setup
 
 Roughly summarize section 3.2 of JeWu, for intuition have another look at the youtube video by the Italian.
+Also include some graphic for the two-sequential distributions intuition
+Parameter optimization doesn't really add any academic insight, best to just follow JeWu and use 8 topcis.
 
 ### 2.3 LDA vs NMF
 
 Not sure yet on the performance metric, running all results with both methods seems a little over the top, coherence score might be a good ex-ante proxy.
+Simple side-by-side comparison of top 4 topics and relevant words will do, along with some quantitative measure like coherence.
 
 ### 2.4 Descriptives
 
@@ -62,6 +66,7 @@ Assuming negligible sentiment leakage from the Fed and, if Twitter can predict F
 ## 5 Robustness checks
 
 Concern by Schmeling/Wagner about lookahead bias if topic model is trained with whole-period data. Would make sense if I were to predict topic proportions or the like but is that really also the case when predicting market returns?
+Pre- and post-2011 behavior of market correlations
 
 Perhaps move ADL vs NMF here?
 
