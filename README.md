@@ -18,6 +18,10 @@ Market data is from yahoo finance
 
 spacy
 
+### 1.3 Descriptives
+
+Random minutes paragraph a. before processing b. after tokenization and lemmatization c. after vectorization. Keep this one short!
+
 ## 2 Methodology: Tone computation and topic modelling
 
 ### 2.1 Tone computation
@@ -32,7 +36,11 @@ Roughly summarize section 3.2 of JeWu, for intuition have another look at the yo
 
 Not sure yet on the performance metric, running all results with both methods seems a little over the top, coherence score might be a good ex-ante proxy.
 
-## 3 Empirical results and Descriptives
+### 2.4 Descriptives
+
+Intertemporal progression of topic shares per document - based on document-level net-score measure
+
+## 3 Empirical results
 
 ### 3.1 Minutes and the Market (contemporaneous correlations)
 
