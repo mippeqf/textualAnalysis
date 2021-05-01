@@ -1,6 +1,7 @@
 # Use N=1 to test for whole-document significance
 # Tutorial: https://www.machinelearningplus.com/nlp/gensim-tutorial/#6howtocreateabagofwordscorpusfromatextfile
 import gensim
+import gensim.models.nmf
 import pickle
 import logging
 from wordcloud import WordCloud
@@ -16,10 +17,6 @@ minutes = pickle.load(open("data/2filteredParagraphs", "rb"))
 # Model computations are a lot efficient if IDs are used as word identifiers instead of the strings themselves
 # That's the entire reason for using a dictionary
 dct = gensim.corpora.Dictionary(minutes)
-
-# TODO Concern by Schmeling and Wagner (very end of section 2.2) that topic modelling could induce hindsight
-# bias, as model is trained on entire corpus of articles.
-# Do a robustness test where training is only done on the past 5-10 years (simply start in 1993)
 
 # Filter out extremes to limit the number of features
 dct.filter_extremes(
@@ -44,10 +41,10 @@ transtfidf = tfidf[corpus]
 
 # Train the LDA model
 SEED = 130
-TOPICS = 4  # number of overall topics
+TOPICS = 8  # number of overall topics, following Jegadeesh&Wu
 ALPHA = 0.15  #
 ETA = 1.25  #
-PASSES = 20  # number of iterations to train the model, 50 is default
+PASSES = 1  # number of iterations to train the model, 50 is default
 
 # Haven't tested multicore training yet, only works with wrapping te following in - if __name__ == "__main__":
 lda = gensim.models.LdaModel(
@@ -64,7 +61,32 @@ lda = gensim.models.LdaModel(
 print("---------------------------")
 lda.print_topics(10, 10)
 print("---------------------------")
-lda.save("data/lda.model")
+lda.save("models/lda")
+pickle.dump(dct, open("models/dct.pkl", "wb"))
+pickle.dump(corpus, open("models/corpus.pkl", "wb"))
 
+# TODO Concern by Schmeling and Wagner (very end of section 2.2) that topic modelling could induce hindsight
+# bias, as model is trained on entire corpus of articles.
+# Do a robustness test where training is only done on the past 5-10 years (simply start in 1993)
 # TODO Use TFIDF corpus instead of vanilla bag-of-words corpus (and figure out why that's better)
-# TODO Implement NMF
+
+
+# NMF
+nmf = gensim.models.nmf.Nmf(
+    corpus=corpus,
+    num_topics=TOPICS,
+    id2word=dct,
+    chunksize=2000,
+    passes=5,
+    kappa=.1,
+    minimum_probability=0.01,
+    w_max_iter=300,
+    w_stop_condition=0.0001,
+    h_max_iter=100,
+    h_stop_condition=0.001,
+    eval_every=10,
+    normalize=True,
+    random_state=42
+)
+
+nmf.save("models/nmf")

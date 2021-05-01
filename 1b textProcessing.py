@@ -70,5 +70,5 @@ pickle.dump(filteredParagraphs, open("data/2filteredParagraphs", "wb"))
 # pickle.dump(minutesNew, open("data/2documentlevelFilteredParagraphs", "wb")) # Doesn't contain bigrams
 
 # Done for now
-# TODO Fine tune bigram parameter
+# TODO optional: Fine tune bigram parameter
 # TODO optional: admin section cutoff by occurence of word "vote"
