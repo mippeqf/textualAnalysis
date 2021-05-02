@@ -43,6 +43,8 @@ for i, row in enumerate(minutes):
     print(row["link"])
     netToneScoreAgg = {i: 0 for i in range(0, 8)}
     uncertScoreAgg = {i: 0 for i in range(0, 8)}
+    docLevelNetToneScoreAgg = 0
+    docLevelUncertScoreAgg = 0
     for paragraph in row["filteredParagraphs"]:
         bow = dct.doc2bow(paragraph)  # generate word vector / bag-of-words from tokenized paragraph
         topics = lda.get_document_topics(bow, minimum_phi_value=0.01)  # Paramter necessary, bug in the library
@@ -56,15 +58,17 @@ for i, row in enumerate(minutes):
                 negScore += 1
             if token.upper() in lmUNCERT:
                 uncertScore += 1
-        for index, weight in topics:
-            if len(paragraph):
+        if len(paragraph):
+            for index, weight in topics:
                 # EQUATION 6 IN JEWU (PAGE 17)
                 netToneScoreAgg[index] += (posScore-negScore)*weight/len(paragraph)
                 uncertScoreAgg[index] += uncertScore*weight/len(paragraph)
+            docLevelNetToneScoreAgg += (posScore-negScore)/len(paragraph)
+            docLevelUncertScoreAgg += uncertScore/len(paragraph)
 
     netTone = {"netToneScore"+str(key): value for key, value in netToneScoreAgg.items()}
     uncert = {"uncertScore"+str(key): value for key, value in uncertScoreAgg.items()}
-    minutesNew.append({**row, **netTone, **uncert})
+    minutesNew.append({**row, **netTone, **uncert, "docLevelNetTone": docLevelNetToneScoreAgg, "docLevelUncert": docLevelUncertScoreAgg})
     # print(i, "of", len(minutes), row["year"])
 
 # Dump dataset containing timeseries of textual analysis to csv for Stata

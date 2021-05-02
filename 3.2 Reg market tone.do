@@ -25,19 +25,14 @@ save "./data/spyYF.dta", replace
 merge 1:m date using "C:\Users\Markus\Desktop\BA\textualAnalysis\data\tone.dta", keep(match) nogen
 sort date
 gen return = close-open, after(close)
+// Delete two of three observations referring to the same document
+drop if strpos(link, "#") // Specific to this dataset!
 
-br
-
-quietly eststo: reg return lmneg
-quietly eststo: reg return lmneg lmpos
-quietly eststo: reg return lmneg lmpos lmpol lmsub
-esttab, p r2
-eststo clear
-quietly eststo: reg return hvneg
-quietly eststo: reg return hvneg hvpos
-quietly eststo: reg return hvneg hvpos hvpol hvsub
+quietly eststo: reg return doclevelnettone
+quietly eststo: reg return docleveluncert
+quietly eststo: reg return doclevelnettone docleveluncert
+quietly eststo: reg return nettone*
+quietly eststo: reg return uncert*
 esttab, p r2
 
 // TODO figure out how to properly interpret these regressions - see Schmeling Wagner
-
-br

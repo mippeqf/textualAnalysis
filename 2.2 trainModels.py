@@ -2,6 +2,7 @@
 # Tutorial: https://www.machinelearningplus.com/nlp/gensim-tutorial/#6howtocreateabagofwordscorpusfromatextfile
 import gensim
 import gensim.models.nmf
+import gensim.corpora
 import pickle
 import logging
 from wordcloud import WordCloud
@@ -44,7 +45,7 @@ SEED = 130
 TOPICS = 8  # number of overall topics, following Jegadeesh&Wu
 ALPHA = 0.15  #
 ETA = 1.25  #
-PASSES = 20  # number of iterations to train the model, 50 is default
+PASSES = 1  # number of iterations to train the model, 50 is default
 
 # Haven't tested multicore training yet, only works with wrapping te following in - if __name__ == "__main__":
 lda = gensim.models.LdaModel(
@@ -63,6 +64,7 @@ lda.print_topics(10, 10)
 print("---------------------------")
 lda.save("models/lda")
 dct.save("models/dct")
+gensim.corpora.MmCorpus.serialize("models/corpus", corpus)
 
 # TODO Concern by Schmeling and Wagner (very end of section 2.2) that topic modelling could induce hindsight
 # bias, as model is trained on entire corpus of articles.
