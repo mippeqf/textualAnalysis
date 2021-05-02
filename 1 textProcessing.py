@@ -19,6 +19,7 @@ nlp = spacy.load("en_core_web_lg")
 nlp.max_length = 1500000  # Set up buffer length
 
 minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "1fomcLinks"), "rb"))
+# minutes.reverse()  # DEBUG starting from 1993
 
 # Container for filtered paragraphs (ie sets of filtered tokens)
 # Document boundaries are irrelevant, because following Jegadeesh and Wu, object to
@@ -32,14 +33,15 @@ minutesNew = []
 for row in tqdm(minutes):
 
     soup = BeautifulSoup(requests.get(row["link"]).content, "html.parser")
-    text = soup.find("div", id="content").get_text() if soup.find("div", id="content") != None else soup.find("body").get_text()
+    text = soup.find("div", id="content") if soup.find("div", id="content") != None else soup.find("body")
 
     # Break document into paragraphs with min length 100 characters
-    paragraphsTemp = text.split("\n")
+    # text.split("\n") doesn't work, minutes before 2000 use \n for every linebreak even within paragraphs!
+    paragraphsTemp = text.find_all("p")
     paragraphs = []
     for para in paragraphsTemp:
-        if len(para) > 300:
-            paragraphs.append(para)
+        if not len(para.find_all("p")) and len(para.get_text()) > 300:  # If no other p tags within the paragraph and min length
+            paragraphs.append(para.get_text())
 
     documentLevelFilteredParagraphs = []
     for para in paragraphs:

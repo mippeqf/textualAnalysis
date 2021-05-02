@@ -40,8 +40,6 @@ lmUNCERT = set(lmRAW.query('Uncertainty > 0')['Word'])
 ####################################################
 
 for i, row in enumerate(minutes):
-    if int(row["year"]) > 1998:
-        continue
     print(row["link"])
     netToneScoreAgg = {i: 0 for i in range(0, 8)}
     uncertScoreAgg = {i: 0 for i in range(0, 8)}
