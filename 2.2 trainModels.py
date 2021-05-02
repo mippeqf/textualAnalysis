@@ -62,8 +62,7 @@ print("---------------------------")
 lda.print_topics(10, 10)
 print("---------------------------")
 lda.save("models/lda")
-pickle.dump(dct, open("models/dct.pkl", "wb"))
-pickle.dump(corpus, open("models/corpus.pkl", "wb"))
+dct.save("models/dct")
 
 # TODO Concern by Schmeling and Wagner (very end of section 2.2) that topic modelling could induce hindsight
 # bias, as model is trained on entire corpus of articles.

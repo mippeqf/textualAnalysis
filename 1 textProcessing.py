@@ -7,6 +7,7 @@
 
 # For LDA, use parameter "number of topics" N = 1 to test for whole-document relevance
 
+import os
 from gensim.models import Phrases
 import pickle
 from bs4 import BeautifulSoup
@@ -17,7 +18,7 @@ from wordcloud import WordCloud
 nlp = spacy.load("en_core_web_lg")
 nlp.max_length = 1500000  # Set up buffer length
 
-minutes = pickle.load(open("data/1fomcLinks", "rb"))
+minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "1fomcLinks"), "rb"))
 
 # Container for filtered paragraphs (ie sets of filtered tokens)
 # Document boundaries are irrelevant, because following Jegadeesh and Wu, object to
@@ -25,8 +26,8 @@ minutes = pickle.load(open("data/1fomcLinks", "rb"))
 # Differing fractions of paragraphs per document can be examiend over time, but that is
 # more of a "derivative question" instead of the main focus.
 filteredParagraphs = []
-# minutesNew = []
-rawParagraphs = []  # Tokenized paragraphs without lemmatizing and type filtering - robustness test
+minutesNew = []
+# rawParagraphs = []  # Tokenized paragraphs without lemmatizing and type filtering - robustness test
 
 for row in tqdm(minutes):
 
@@ -49,11 +50,11 @@ for row in tqdm(minutes):
         for token in paraClassified:
             if token.is_stop == False and token.is_punct == False and (token.pos_ == "NOUN" or token.pos_ == "ADJ" or token.pos_ == "VERB"):
                 filteredTokens.append(token.lemma_.lower())
-            rawTokens.append(token.lemma_.lower())
+            # rawTokens.append(token.lower())
         filteredParagraphs.append(filteredTokens)
         documentLevelFilteredParagraphs.append(filteredTokens)
-        rawParagraphs.append(rawTokens)
-    # minutesNew.append({**row, "filteredParagraphs": documentLevelFilteredParagraphs})
+        # rawParagraphs.append(rawTokens)
+    minutesNew.append({**row, "filteredParagraphs": documentLevelFilteredParagraphs})
 
 # Add bigrams to the filteredParagraphs list
 # Actually not sure whether spacy does that out-of-the-box as well
@@ -65,9 +66,9 @@ for i in range(len(filteredParagraphs)):
 # Has a minimum parameter, thus cannot work with the document-level version
 
 # Preserve filtered paragraphs for further use
-pickle.dump(rawParagraphs, open("data/2rawParagraphs", "wb"))
-pickle.dump(filteredParagraphs, open("data/2filteredParagraphs", "wb"))
-# pickle.dump(minutesNew, open("data/2documentlevelFilteredParagraphs", "wb")) # Doesn't contain bigrams
+# pickle.dump(rawParagraphs, open("data/2rawParagraphs", "wb"))
+pickle.dump(filteredParagraphs, open(os.path.join(os.path.dirname(__file__), "data", "2filteredParagraphs"), "wb"))
+pickle.dump(minutesNew, open(os.path.join(os.path.dirname(__file__), "data", "2documentlevelFilteredParagraphs"), "wb"))  # Doesn't contain bigrams
 
 # Done for now
 # TODO optional: Fine tune bigram parameter

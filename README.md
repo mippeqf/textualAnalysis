@@ -23,26 +23,27 @@ spacy
 
 Random minutes paragraph a. before processing b. after tokenization and lemmatization c. after vectorization. Keep this one short!
 
-## 2 Methodology: Tone computation and topic modelling
+## 2 Methodology: Topic modelling and tone computation
 
-### 2.1 Tone computation
-
-Short description of dictionary-lookup process and aggregation to document-level net tone score
-
-### 2.2 LDA setup
+### 2.1 LDA setup
 
 Roughly summarize section 3.2 of JeWu, for intuition have another look at the youtube video by the Italian.
 Also include some graphic for the two-sequential distributions intuition
 Parameter optimization doesn't really add any academic insight, best to just follow JeWu and use 8 topcis.
 
-### 2.3 LDA vs NMF
+### 2.2 LDA vs NMF
 
 Not sure yet on the performance metric, running all results with both methods seems a little over the top, coherence score might be a good ex-ante proxy.
 Simple side-by-side comparison of top 4 topics and relevant words will do, along with some quantitative measure like coherence.
 
+### 2.3 Tone computation
+
+Short description of dictionary-lookup process and aggregation to document-level net tone score.
+For overall-document tone without topic modelling, set topic proportions symmetrically to 1. That leaves the sum of the tone-specific words scaled by the paragraph length. (Using the same setup with different inputs is cleaner than two separate approaches)
+
 ### 2.4 Descriptives
 
-Intertemporal progression of topic shares per document - based on document-level net-score measure
+Intertemporal progression of topic shares and net tone per document
 
 ## 3 Empirical results
 
@@ -69,6 +70,8 @@ Concern by Schmeling/Wagner about lookahead bias if topic model is trained with 
 Pre- and post-2011 behavior of market correlations
 
 Perhaps move ADL vs NMF here?
+
+Aggregate tone using sign instead of absolute score - every paragraph is either + or -, these values are then aggregated to the document-level (paragraph-based tone computation)
 
 ## 6 Conclusion
 
