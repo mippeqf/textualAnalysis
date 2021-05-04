@@ -38,9 +38,9 @@ lmUNCERT = set(lmRAW.query('Uncertainty > 0')['Word'])
 ####################################################
 # Document-level tone computation
 ####################################################
-
+minutes.reverse()
 for i, row in enumerate(minutes):
-    print(row["link"])
+
     netToneScoreAgg = {i: 0 for i in range(0, 8)}
     uncertScoreAgg = {i: 0 for i in range(0, 8)}
     docLevelNetToneScoreAgg = 0
@@ -65,10 +65,13 @@ for i, row in enumerate(minutes):
                 uncertScoreAgg[index] += uncertScore*weight/len(paragraph)
             docLevelNetToneScoreAgg += (posScore-negScore)/len(paragraph)
             docLevelUncertScoreAgg += uncertScore/len(paragraph)
+            posnegcounter = posScore+negScore
+            uncertcounter = uncertScore
 
-    netTone = {"netToneScore"+str(key): value for key, value in netToneScoreAgg.items()}
-    uncert = {"uncertScore"+str(key): value for key, value in uncertScoreAgg.items()}
-    minutesNew.append({**row, **netTone, **uncert, "docLevelNetTone": docLevelNetToneScoreAgg, "docLevelUncert": docLevelUncertScoreAgg})
+    netTone = {"netTone"+str(key): value for key, value in netToneScoreAgg.items()}
+    uncert = {"uncert"+str(key): value for key, value in uncertScoreAgg.items()}
+    minutesNew.append({**row, **netTone, **uncert, "DL_nettone": docLevelNetToneScoreAgg,
+                       "DL_uncert": docLevelUncertScoreAgg, "posnegcnt": posnegcounter, "uncertcnt": uncertcounter})
     # print(i, "of", len(minutes), row["year"])
 
 # Dump dataset containing timeseries of textual analysis to csv for Stata

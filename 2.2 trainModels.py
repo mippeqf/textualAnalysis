@@ -45,7 +45,7 @@ SEED = 130
 TOPICS = 8  # number of overall topics, following Jegadeesh&Wu
 ALPHA = 0.15  #
 ETA = 1.25  #
-PASSES = 1  # number of iterations to train the model, 50 is default
+PASSES = 50  # number of iterations to train the model, 50 is default
 
 # Haven't tested multicore training yet, only works with wrapping te following in - if __name__ == "__main__":
 lda = gensim.models.LdaModel(

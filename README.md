@@ -15,6 +15,8 @@ Downloaded from …
 Market data is from yahoo finance
 Details on characteristics of fomc minutes, only available in today's format since 1993. Include that one graphic from the fed publication here.
 
+I do not merge HV and LM dictionary. Although there seems to be somewhat of a drought around the year 2000 in term occurence, merging the Harvard lexicon onto LM would defeat the entire purpose of the LM dictionary.
+
 ### 1.2 Preparation of textual data
 
 spacy
@@ -50,7 +52,7 @@ Intertemporal progression of topic shares and net tone per document
 ### 3.1 Minutes and the Market (contemporaneous correlations)
 
 Linking tone (and derivatives like tone change etc) to market
-Linking uncertainty to market
+Linking uncertainty to market, esp volatility
 
 ### 3.2 Predicting market with Twitter
 
@@ -60,18 +62,34 @@ Loosely following Azar 2016
 
 My unique contribution, might have mildly interesting implications in combination with prior two results.
 
+### 3.4 Predictive power of uncertainty
+
+## (Checking uniqueness of finding)
+
+Can finding be explained using established models? (Eg a new trading strategy using a regular Fama-French-5-factor model)
+If so, room for further dissection (eg see Time series momentum: Even though tsm can be explained with csm, the prior actually constitutes part of the latter. Thus, chain of causation is suggested.)
+
 ## 4 Implications/Interpretation/Dicussion
 
 Assuming negligible sentiment leakage from the Fed and, if Twitter can predict FOMC tone, the FOMC merely aggregates public sentiment. (Even if Twitter merely predicts a third factor which causes FOMC sentiment, that - under the no-leakage assumption - will be in the public realm as well). Thus, this association determines the "uniquness" of the FOMC's tone.
 
 ## 5 Robustness checks
 
-Concern by Schmeling/Wagner about lookahead bias if topic model is trained with whole-period data. Would make sense if I were to predict topic proportions or the like but is that really also the case when predicting market returns?
+#### Lookahead bias in model training
+
+Concern by Schmeling/Wagner about lookahead bias if topic model is trained with whole-period data. Would make sense if I were to predict topic proportions or the like but is that really also the case when predicting market returns? - sequential model training with data of previous 5-10 years
+
+#### 2011
+
 Pre- and post-2011 behavior of market correlations
 
-Perhaps move ADL vs NMF here?
+#### NMF
 
-Aggregate tone using sign instead of absolute score - every paragraph is either + or -, these values are then aggregated to the document-level (paragraph-based tone computation)
+Do NMF as a robustness test, if it does perform better, switch the entire layout and develop the first section around NMF, including ADL as a robustness check
+
+#### Different methods for tone computation
+
+Aggregate tone using **sign** instead of absolute score - every paragraph is either + or -, these values are then aggregated to the document-level (paragraph-based tone computation)
 
 ## 6 Conclusion
 

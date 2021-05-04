@@ -66,6 +66,9 @@ for i in range(len(filteredParagraphs)):
         if "_" in token:  # Phrases object tacks bigrams onto the paragraph, so check through all to see whether there are any new ones
             filteredParagraphs[i].append(token)  # If bigram is found, append to old paragraph
 # Has a minimum parameter, thus cannot work with the document-level version
+# TODO Should be applied on the unfiltered text (for obv reasons) but cannot be applied on the document level
+# with the current architecture. Unlikely that anyone will ever notice, thus low prio or remove alltogether.
+
 
 # Preserve filtered paragraphs for further use
 # pickle.dump(rawParagraphs, open("data/2rawParagraphs", "wb"))
