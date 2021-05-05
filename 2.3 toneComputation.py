@@ -68,8 +68,8 @@ for i, row in enumerate(minutes):
             posnegcounter = posScore+negScore
             uncertcounter = uncertScore
 
-    netTone = {"netTone"+str(key): value for key, value in netToneScoreAgg.items()}
-    uncert = {"uncert"+str(key): value for key, value in uncertScoreAgg.items()}
+    netTone = {"netTone"+str(key+1): value for key, value in netToneScoreAgg.items()}
+    uncert = {"uncert"+str(key+1): value for key, value in uncertScoreAgg.items()}
     minutesNew.append({**row, **netTone, **uncert, "DL_nettone": docLevelNetToneScoreAgg,
                        "DL_uncert": docLevelUncertScoreAgg, "posnegcnt": posnegcounter, "uncertcnt": uncertcounter})
     # print(i, "of", len(minutes), row["year"])
