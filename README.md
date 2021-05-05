@@ -23,7 +23,11 @@ spacy
 
 ### 1.3 Descriptives
 
-Random minutes paragraph a. before processing b. after tokenization and lemmatization c. after vectorization. Keep this one short!
+- Random minutes paragraph a. before processing b. after tokenization and lemmatization c. after vectorization. Keep this one short!
+
+- Evolution of tone and uncertainty (and possibly changes of those metrics, but not really informative)
+- Academic wordcloud - most frequent negative words (also by topic) with respective frequency (or weights)
+- Dicuss the word drought around 2000! - Keeping that in should work against me and taking it out after observing it might possibly induce bias
 
 ## 2 Methodology: Topic modelling and tone computation
 
@@ -64,7 +68,7 @@ My unique contribution, might have mildly interesting implications in combinatio
 
 ### 3.4 Predictive power of uncertainty
 
-## (Checking uniqueness of finding)
+## (Check uniqueness of finding)
 
 Can finding be explained using established models? (Eg a new trading strategy using a regular Fama-French-5-factor model)
 If so, room for further dissection (eg see Time series momentum: Even though tsm can be explained with csm, the prior actually constitutes part of the latter. Thus, chain of causation is suggested.)

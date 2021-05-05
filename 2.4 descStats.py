@@ -10,6 +10,11 @@ import pickle
 import gensim.corpora
 import gensim.utils
 
+#  TODO
+# - Proportion evolution (see Medium article)
+# - Wordcloud by topic (as list with according topic weights in second column)
+# - Use Schmeling Wagner as a guide for wordcloud, they're pretty meticulous
+
 #################################################################
 # LDAvis
 #################################################################
