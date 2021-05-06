@@ -22,11 +22,8 @@ minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "1fom
 # minutes.reverse()  # DEBUG starting from 1993
 
 # Container for filtered paragraphs (ie sets of filtered tokens)
-# Document boundaries are irrelevant, because following Jegadeesh and Wu, object to
-# model topic on is the paragraph and not the document.
-# Differing fractions of paragraphs per document can be examiend over time, but that is
-# more of a "derivative question" instead of the main focus.
-filteredParagraphs = []
+# Needed for model training and word clouds. Structurally not necessary, can be derived from the DL array at any time
+# filteredParagraphs = []
 minutesNew = []
 # rawParagraphs = []  # Tokenized paragraphs without lemmatizing and type filtering - robustness test
 
@@ -43,7 +40,8 @@ for row in tqdm(minutes):
         if not len(para.find_all("p")) and len(para.get_text()) > 300:  # If no other p tags within the paragraph and min length
             paragraphs.append(para.get_text())
 
-    documentLevelFilteredParagraphs = []
+    DLfilteredparagraphs = []
+    DLrawparagraphs = []
     for para in paragraphs:
         # Run standard spacy classification pipeline (tokenization, identification of word type etc)
         paraClassified = nlp(para)
@@ -52,28 +50,25 @@ for row in tqdm(minutes):
         for token in paraClassified:
             if token.is_stop == False and token.is_punct == False and (token.pos_ == "NOUN" or token.pos_ == "ADJ" or token.pos_ == "VERB"):
                 filteredTokens.append(token.lemma_.lower())
-            # rawTokens.append(token.lower())
-        filteredParagraphs.append(filteredTokens)
-        documentLevelFilteredParagraphs.append(filteredTokens)
-        # rawParagraphs.append(rawTokens)
-    minutesNew.append({**row, "filteredParagraphs": documentLevelFilteredParagraphs})
+            rawTokens.append(token.lower_)
+        # filteredParagraphs.append(filteredTokens)
+        DLfilteredparagraphs.append(filteredTokens)
+        DLrawparagraphs.append(rawTokens)  # only tokenized and decapitalised, no type filtering
+    minutesNew.append({**row, "filteredParagraphs": DLfilteredparagraphs, "rawParagraphs": DLrawparagraphs})
 
-# Add bigrams to the filteredParagraphs list
-# Actually not sure whether spacy does that out-of-the-box as well
-bigram = Phrases(filteredParagraphs, min_count=20)
-for i in range(len(filteredParagraphs)):
-    for token in bigram[filteredParagraphs[i]]:  # gensim uses the entire lemmatized paragraph as an index in the bigram list object for some reason
-        if "_" in token:  # Phrases object tacks bigrams onto the paragraph, so check through all to see whether there are any new ones
-            filteredParagraphs[i].append(token)  # If bigram is found, append to old paragraph
-# Has a minimum parameter, thus cannot work with the document-level version
-# TODO Should be applied on the unfiltered text (for obv reasons) but cannot be applied on the document level
-# with the current architecture. Unlikely that anyone will ever notice, thus low prio or remove alltogether.
-
+# TODO Implement bigrams and trigrams!
+# Add bigrams to the filteredParagraphs list, spacy has an implementation called noun chunks
+if False:
+    bigram = Phrases(filteredParagraphs, min_count=20)
+    for i in range(len(filteredParagraphs)):
+        for token in bigram[filteredParagraphs[i]]:  # gensim uses the entire lemmatized paragraph as an index in the bigram list object for some reason
+            if "_" in token:  # Phrases object tacks bigrams onto the paragraph, so check through all to see whether there are any new ones
+                filteredParagraphs[i].append(token)  # If bigram is found, append to old paragraph
 
 # Preserve filtered paragraphs for further use
-# pickle.dump(rawParagraphs, open("data/2rawParagraphs", "wb"))
-pickle.dump(filteredParagraphs, open(os.path.join(os.path.dirname(__file__), "data", "2filteredParagraphs"), "wb"))
-pickle.dump(minutesNew, open(os.path.join(os.path.dirname(__file__), "data", "2documentlevelFilteredParagraphs"), "wb"))  # Doesn't contain bigrams
+# pickle.dump(rawParagraphs, open("data/2rawParagraphs", "wb")) # Depercated
+# pickle.dump(filteredParagraphs, open(os.path.join(os.path.dirname(__file__), "data", "2filteredParagraphs"), "wb")) # Depercated
+pickle.dump(minutesNew, open(os.path.join(os.path.dirname(__file__), "data", "2DLparagraphs"), "wb"))  # Doesn't contain bigrams
 
 # Done for now
 # TODO optional: Fine tune bigram parameter

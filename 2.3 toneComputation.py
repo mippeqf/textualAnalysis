@@ -22,7 +22,7 @@ import gensim.utils
 import os.path
 from tqdm import tqdm
 
-minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "2documentlevelfilteredParagraphs"), "rb"))
+minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "2DLparagraphs"), "rb"))
 # Minutes are a list of dictionaries with fields year, meeting, link, and list of lists containing preprocessed paragraphs
 
 dct = gensim.utils.SaveLoad.load(os.path.join(os.path.dirname(__file__), "models", "dct"))
@@ -86,8 +86,19 @@ for i, row in enumerate(minutes):
                        "DL_uncert": docLevelUncertScore, "posnegcnt": posnegcounter, "uncertcnt": uncertcounter})
     # print(i, "of", len(minutes), row["year"])
 
+minutesNewNew = []
+for doc in tqdm(minutesNew):
+    topicAgg = {i: 0 for i in range(0, 8)}
+    totalLength = sum([len(para) for para in doc["rawParagraphs"]])  # total length of entire document
+    for i, para in enumerate(doc["filteredParagraphs"]):
+        paraLength = len(doc["rawParagraphs"][i])
+        for index, weight in lda.get_document_topics(dct.doc2bow(para)):
+            topicAgg[index] += weight*paraLength/totalLength
+    topicProps = {"propTopic"+str(key+1): value for key, value in topicAgg.items()}
+    minutesNewNew.append({**doc, **topicProps})
+
 # Dump dataset containing timeseries of textual analysis to csv for Stata
 with open(os.path.join(os.path.dirname(__file__), "data", "dataExport.csv"), "w", newline="", encoding="utf-8") as f:
-    writer = csv.DictWriter(f, minutesNew[0].keys())
+    writer = csv.DictWriter(f, minutesNewNew[0].keys())
     writer.writeheader()
-    writer.writerows(minutesNew)
+    writer.writerows(minutesNewNew)

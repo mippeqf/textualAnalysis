@@ -7,12 +7,14 @@ import pickle
 import logging
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+import os.path
 
 # Set up logging
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 # Load the long list of tokenized paragaphs (not separation by article!)
-minutes = pickle.load(open("data/2filteredParagraphs", "rb"))
+minspickeled = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "2DLparagraphs"), "rb"))
+minutes = [para for doc in minspickeled for para in doc["filteredParagraphs"]]
 
 # Map unique IDs to words (id to word mapping - ID2Word)
 # Model computations are a lot efficient if IDs are used as word identifiers instead of the strings themselves

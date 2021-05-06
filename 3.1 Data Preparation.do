@@ -34,6 +34,8 @@ line dl_nettone dl_uncert date
 graph export ".\img\baseProgression.png", as(png) replace
 line dl_nettone_change dl_uncert_change date
 graph export ".\img\changeProgresion.png", as(png) replace
+line proptopic3 proptopic2 proptopic6 proptopic7 proptopic8 date
+graph export ".\img\topicProportionProgression.png", as(png) replace
 
 // Parse financial data
 import delimited "C:\Users\Markus\Desktop\BA\textualAnalysis\statics\spyYF.csv", clear
