@@ -16,7 +16,7 @@ tostring release, replace
 generate date = date(release,"YMD"), after(release)
 format %tdDD/NN/CCYY date
 label variable date "Release date"
-drop release filteredparagraphs 
+drop release 
 gen dl_nettone_change = dl_nettone[_n] - dl_nettone[_n-1], after(dl_nettone)
 gen dl_uncert_change = dl_uncert[_n] - dl_uncert[_n-1], after(dl_uncert)
 save "./data/tone.dta", replace
@@ -34,8 +34,11 @@ line dl_nettone dl_uncert date
 graph export ".\img\baseProgression.png", as(png) replace
 line dl_nettone_change dl_uncert_change date
 graph export ".\img\changeProgresion.png", as(png) replace
-line proptopic3 proptopic2 proptopic6 proptopic7 proptopic8 date
+preserve
+keep if year>2005
+line proptopic3 proptopic2 proptopic6 proptopic8 date
 graph export ".\img\topicProportionProgression.png", as(png) replace
+restore
 
 // Parse financial data
 import delimited "C:\Users\Markus\Desktop\BA\textualAnalysis\statics\spyYF.csv", clear
@@ -69,4 +72,5 @@ tsset trading_days
 
 save ".\3 dataPrepared.dta", replace
 
+keep if _merge==3
 br

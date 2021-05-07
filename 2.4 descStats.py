@@ -46,3 +46,5 @@ if False:
 
 minspickeled = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "2DLparagraphs"), "rb"))
 minutes = [para for doc in minspickeled for para in doc["filteredParagraphs"]]
+
+# TODO WORDCLOUDS

@@ -79,7 +79,7 @@ Assuming negligible sentiment leakage from the Fed and, if Twitter can predict F
 
 ## 5 Robustness checks
 
-#### Lookahead bias in model training
+#### Lookahead bias in model training - do if time allows
 
 Concern by Schmeling/Wagner about lookahead bias if topic model is trained with whole-period data. Would make sense if I were to predict topic proportions or the like but is that really also the case when predicting market returns? - sequential model training with data of previous 5-10 years
 
@@ -87,7 +87,7 @@ Concern by Schmeling/Wagner about lookahead bias if topic model is trained with 
 
 Pre- and post-2011 behavior of market correlations
 
-#### NMF
+#### NMF - direkt in Hauptteil
 
 Do NMF as a robustness test, if it does perform better, switch the entire layout and develop the first section around NMF, including ADL as a robustness check
 
