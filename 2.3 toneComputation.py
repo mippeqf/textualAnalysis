@@ -44,16 +44,26 @@ for i, row in enumerate(tqdm(minutes)):
     uncertScoreAggLda = {i: 0 for i in range(0, 8)}
     netToneScoreAggNmf = {i: 0 for i in range(0, 8)}
     uncertScoreAggNmf = {i: 0 for i in range(0, 8)}
+    topTopicLdaAgg = {i: 0 for i in range(0, 8)}
+    topTopicNmfAgg = {i: 0 for i in range(0, 8)}
+    topicAgg = {i: 0 for i in range(0, 8)}
+    totalLength = sum([len(para) for para in row["rawParagraphs"]])  # total length of entire document
     docLevelNetToneScore = 0
     docLevelUncertScore = 0
     posnegcounter = 0
     uncertcounter = 0
+
     for paragraph in row["filteredParagraphs"]:
-        if not len(paragraph):  # Skip if paragraph is empty, would crash the /len(paragraph) part without
+
+        # Skip if paragraph is empty, would crash the /len(paragraph) part without
+        if not len(paragraph):
             continue
+
+        # Feed text into topic models
         bow = dct.doc2bow(paragraph)  # generate word vector / bag-of-words from tokenized paragraph
         ldatopics = lda.get_document_topics(bow, minimum_phi_value=0.01)  # Paramter necessary, bug in the library
         nmftopics = nmf.get_document_topics(bow)
+
         # Iterate through text to count LM term corruences
         posScore = 0
         negScore = 0
@@ -65,7 +75,10 @@ for i, row in enumerate(tqdm(minutes)):
                 negScore += 1
             if token.upper() in lmUNCERT:
                 uncertScore += 1
-        # Compute final metrics
+
+        # COMPUTE PARAGRAPH-LEVEL METRICS AND ADD TO AGGREGATORS
+
+        # Sentiment by topic (net tone and uncertainty)
         for index, weight in ldatopics:  # Iterate through Lda topics
             # EQUATION 6 IN JEWU (PAGE 17)
             netToneScoreAggLda[index] += (posScore-negScore)*weight/len(paragraph)
@@ -73,19 +86,64 @@ for i, row in enumerate(tqdm(minutes)):
         for index, weight in nmftopics:  # Iterate through Nmf topics
             netToneScoreAggNmf[index] += (posScore-negScore)*weight/len(paragraph)
             uncertScoreAggNmf[index] += uncertScore*weight/len(paragraph)
+
+        # Regular topic proportions
+        paraLength = len(row["rawParagraphs"][i])
+        for index, weight in lda.get_document_topics(dct.doc2bow(paragraph)):
+            topicAgg[index] += weight*paraLength/totalLength
+
+        # Top topic sentiment
+
+        # Top topic proportion
+        topTopicLdaAgg[sorted(ldatopics, key=lambda tup: tup[1], reverse=True)[0][0]] += 1
+        if len(nmftopics):  # Nmf can return no topics, thus check
+            topTopicNmfAgg[sorted(nmftopics, key=lambda tup: tup[1], reverse=True)[0][0]] += 1
+
+        # Document-level metrics
         docLevelNetToneScore += (posScore-negScore)/len(paragraph)
         docLevelUncertScore += uncertScore/len(paragraph)
-        posnegcounter = posScore+negScore
-        uncertcounter = uncertScore
+        posnegcounter += posScore+negScore
+        uncertcounter += uncertScore
+
+    # COMPUTE FINAL DOCUMENT-LEVEL METRICS
+
+    # Divide topTopic counts by the total number of paragraphs, blows up list comprehension for some reason
+    for key, value in topTopicLdaAgg.items():
+        if not sum(0 if val == "." else val for val in topTopicLdaAgg.values()):
+            topTopicLdaAgg[key] = "."  # missing
+        else:
+            topTopicLdaAgg[key] = value/sum(0 if val == "." else val for val in topTopicLdaAgg.values())
+    for key, value in topTopicNmfAgg.items():
+        if not sum(0 if val == "." else val for val in topTopicNmfAgg.values()):
+            topTopicNmfAgg[key] = "."  # missing
+        else:
+            topTopicNmfAgg[key] = value/sum(0 if val == "." else val for val in topTopicNmfAgg.values())
 
     netToneLda = {"ldaNetTone"+str(key+1): value for key, value in netToneScoreAggLda.items()}
     uncertLda = {"ldaUncert"+str(key+1): value for key, value in uncertScoreAggLda.items()}
     netToneNmf = {"nmfNetTone"+str(key+1): value for key, value in netToneScoreAggNmf.items()}
     uncertNmf = {"nmfUncert"+str(key+1): value for key, value in uncertScoreAggNmf.items()}
-    minutesNew.append({**row, **netToneLda, **uncertLda, **netToneNmf, **uncertNmf, "DL_nettone": docLevelNetToneScore,
-                       "DL_uncert": docLevelUncertScore, "posnegcnt": posnegcounter, "uncertcnt": uncertcounter})
+    topicProps = {"propTopic"+str(key+1): value for key, value in topicAgg.items()}
+    topTopicPropLda = {"topTopicPropLda"+str(key+1): value for key, value in topTopicLdaAgg.items()}
+    topTopicPropNmf = {"topTopicPropNmf"+str(key+1): value for key, value in topTopicNmfAgg.items()}
+    minutesNew.append({**row, **netToneLda, **uncertLda, **netToneNmf, **uncertNmf,  **topicProps, **topTopicPropLda, **topTopicPropNmf,
+                       "DL_nettone": docLevelNetToneScore, "DL_uncert": docLevelUncertScore,
+                       "posnegcnt": posnegcounter, "uncertcnt": uncertcounter})
 
-print("done1")
+
+# Reduce size of dataset before exporting
+for i, mins in enumerate(minutesNew):
+    del mins["rawParagraphs"]
+    del mins["filteredParagraphs"]
+    minutesNew[i] = mins
+# Dump dataset containing timeseries of textual analysis to csv for Stata
+with open(os.path.join(os.path.dirname(__file__), "data", "dataExport.csv"), "w", newline="", encoding="utf-8") as f:
+    writer = csv.DictWriter(f, minutesNew[0].keys())
+    writer.writeheader()
+    writer.writerows(minutesNew)
+
+exit()
+
 
 # Add topic proportions - quantitative topics
 minutesNewNew = []
@@ -100,7 +158,6 @@ for doc in tqdm(minutesNew):
     topicProps = {"propTopic"+str(key+1): value for key, value in topicAgg.items()}
     minutesNewNew.append({**doc, **topicProps})
 
-print("done2")
 
 # Add top topic proportions - quantitative topics
 # TODO Infuse topic props with sentiment score - qualitative topics
@@ -132,16 +189,3 @@ for doc in tqdm(minutesNewNew):
     topTopicPropLda = {"topTopicPropLda"+str(key+1): value for key, value in topTopicLdaAgg.items()}
     topTopicPropNmf = {"topTopicPropNmf"+str(key+1): value for key, value in topTopicNmfAgg.items()}
     minutesNewNewNew.append({**doc, **topTopicPropLda, **topTopicPropNmf})
-
-print("done3")
-
-# Reduce size of dataset before exporting
-for i, mins in enumerate(minutesNewNewNew):
-    del mins["rawParagraphs"]
-    del mins["filteredParagraphs"]
-    minutesNewNewNew[i] = mins
-# Dump dataset containing timeseries of textual analysis to csv for Stata
-with open(os.path.join(os.path.dirname(__file__), "data", "dataExport.csv"), "w", newline="", encoding="utf-8") as f:
-    writer = csv.DictWriter(f, minutesNewNewNew[0].keys())
-    writer.writeheader()
-    writer.writerows(minutesNewNewNew)
