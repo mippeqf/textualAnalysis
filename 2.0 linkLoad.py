@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import pickle
 from datetime import datetime
+from tqdm import tqdm
 
 # Setup
 recentList = "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
@@ -15,6 +16,7 @@ archiveYearsLinks = []  # helper list
 #########################################################
 
 # HTML links for RECENT 5 years
+print("Scraping links for recent 5 years")
 soup = BeautifulSoup(requests.get(recentList).content, features="html.parser")
 panels = soup.find_all("div", class_="panel")
 for pnl in panels:
@@ -54,14 +56,13 @@ for link in yearLinks:
         archiveYearsLinks.append("https://www.federalreserve.gov"+link["href"])  # href needs to be called with ["href"], .href does not work
 
 # Scrape HTML links from ARCHIVE year pages and add to data list
-for link in archiveYearsLinks:
+print("Scraping links for years older than 5")
+for link in tqdm(archiveYearsLinks):
     soup = BeautifulSoup(requests.get(link).content, features="html.parser")
     year = soup.find("h3").get_text()  # not fool proof
     if int(year) < 1993:
         break
-    print("Archive year: ", year, link)
     panels = soup.find_all("div", class_="panel")
-    print("Number of panels in", year, ":", len(panels))
     for pnl in panels:
         linkTags = pnl.find_all("a")
         link = None
@@ -82,7 +83,6 @@ for link in archiveYearsLinks:
         release = try_parsing_date(release)
         newEntry = {"year": year, "release": release, "link": "https://www.federalreserve.gov"+link}
 
-        print(newEntry)
         data.append(newEntry)
 
     print()
