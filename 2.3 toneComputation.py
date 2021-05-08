@@ -146,7 +146,7 @@ for row in tqdm(minutes):
                        "posnegcnt": posnegcounter, "uncertcnt": uncertcounter})
 
 minutesNewnew = []
-for row in minutes:
+for row in minutesNew:
     wordagg = 0
     for para in row["filteredParagraphs"]:
         wordagg += len(para)

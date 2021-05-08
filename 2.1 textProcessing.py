@@ -19,8 +19,8 @@ minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "1fom
 minutesNew = []
 
 for row in tqdm(minutes):
-    if row["link"] != "https://www.federalreserve.gov/fomc/minutes/20000202.htm":
-        continue
+    # if row["link"] != "https://www.federalreserve.gov/monetarypolicy/fomcminutes20091104.htm":
+    #     continue
     soup = BeautifulSoup(requests.get(row["link"]).content, "html.parser")
     body = str(soup)
     text = soup.find("div", id="content") if soup.find("div", id="content") != None else soup.find("body")
@@ -46,8 +46,7 @@ for row in tqdm(minutes):
     else:
         paragraphstmp = text.find_all("p")
         for para in paragraphstmp:
-            # assert "<p>" not in str(para) and "</p>" not in para, ("Found a p tag in the results", para, row["link"])
-            if len(para.text) > 300:
+            if not len(para.find_all("p")) and len(para.text) > 300:  # Assure that there's no nested paragraph and min length
                 paragraphs.append(para.text)
 
     DLfilteredparagraphs = []

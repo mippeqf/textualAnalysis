@@ -87,21 +87,25 @@ esttab, ar2
 eststo clear
 quietly eststo: reg V dl_nettone
 quietly eststo: reg V dl_uncert
-quietly eststo: reg V dl_nettone dl_uncert
+quietly eststo: reg V dissent
+quietly eststo: reg V dl_nettone dl_uncert dissent
 quietly eststo: reg V L(1/10).V dl_nettone
 quietly eststo: reg V L(1/10).V dl_uncert
-quietly eststo: reg V L(1/10).V dl_nettone dl_uncert
-esttab, ar2 indicate("Lagged volatility" = L*.V)
+quietly eststo: reg V L(1/10).V dissent
+quietly eststo: reg V L(1/10).V dl_nettone dl_uncert dissent
+esttab, ar2 indicate("Lagged volatility" = L*.V) noconst
 
 // Return
 eststo clear
 quietly eststo: reg R_intra dl_nettone
 quietly eststo: reg R_intra dl_uncert
-quietly eststo: reg R_intra dl_nettone dl_uncert
+quietly eststo: reg R_intra dissent
+quietly eststo: reg R_intra dl_nettone dl_uncert dissent
 quietly eststo: reg R_24 dl_nettone
 quietly eststo: reg R_24 dl_uncert
-quietly eststo: reg R_24 dl_nettone dl_uncert
-esttab, ar2
+quietly eststo: reg R_24 dissent
+quietly eststo: reg R_24 dl_nettone dl_uncert dissent
+esttab, ar2 noconst
 
 // -----------------------------------------------------
 // INFORMATIVENESS OF INDIVIDUAL TOPICS

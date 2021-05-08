@@ -19,15 +19,17 @@ I do not merge HV and LM dictionary. Although there seems to be somewhat of a dr
 
 ### 1.2 Preparation of textual data
 
-spacy
+
 
 ### 1.3 Descriptives
 
 - Random minutes paragraph a. before processing b. after tokenization and lemmatization c. after vectorization. Keep this one short!
-
 - Evolution of tone and uncertainty (and possibly changes of those metrics, but not really informative)
 - Academic wordcloud - most frequent negative words (also by topic) with respective frequency (or weights)
-- Dicuss the word drought around 2000! - Keeping that in should work against me and taking it out after observing it might possibly induce bias
+
+### 1.4 Derivative variables
+
+- Variance: Open-low because that measure carries a higher information content than daily returns squared. At the same time, it doesn't penalize higher deviation disproportionally, which is sth OLS does, but what isn't really desirable. Deviations are squared in OLS simply because the target function is of second order and thereby very tractable, ie slap on a FOC and you're done. Absolute deviations aren't employed because they produce a non-continuous target function. Point is that squared deviations are simply chosen because they're convenient to work with, but since we can construct a more detailed volatility measure out of the high and low values, we take advantage of that.
 
 ## 2 Methodology: Topic modelling and tone computation
 
