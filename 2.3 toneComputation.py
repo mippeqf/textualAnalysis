@@ -36,9 +36,9 @@ lmPOS = set(lmRAW.query('Positive > 0')['Word'])
 lmNEG = set(lmRAW.query('Negative > 0')['Word'])
 lmUNCERT = set(lmRAW.query('Uncertainty > 0')['Word'])
 
-# Compute document-level tone/uncert and topic-specific scores
+# Compute document-level tone/uncert and topic-specific scores - qualitative topics
 minutes.reverse()
-for i, row in enumerate(minutes):
+for i, row in enumerate(tqdm(minutes)):
 
     netToneScoreAggLda = {i: 0 for i in range(0, 8)}
     uncertScoreAggLda = {i: 0 for i in range(0, 8)}
@@ -84,13 +84,12 @@ for i, row in enumerate(minutes):
     uncertNmf = {"nmfUncert"+str(key+1): value for key, value in uncertScoreAggNmf.items()}
     minutesNew.append({**row, **netToneLda, **uncertLda, **netToneNmf, **uncertNmf, "DL_nettone": docLevelNetToneScore,
                        "DL_uncert": docLevelUncertScore, "posnegcnt": posnegcounter, "uncertcnt": uncertcounter})
-    # print(i, "of", len(minutes), row["year"])
 
 print("done1")
 
-# Add topic proportions
+# Add topic proportions - quantitative topics
 minutesNewNew = []
-for doc in minutesNew:
+for doc in tqdm(minutesNew):
     topicAgg = {i: 0 for i in range(0, 8)}
     totalLength = sum([len(para) for para in doc["rawParagraphs"]])  # total length of entire document
     for i, para in enumerate(doc["filteredParagraphs"]):
@@ -103,10 +102,11 @@ for doc in minutesNew:
 
 print("done2")
 
-# Add top topic proportions
+# Add top topic proportions - quantitative topics
+# TODO Infuse topic props with sentiment score - qualitative topics
 # Yes, it would be a lot more efficient if combined with the first for-loop, but I wouldn't understand anything two weeks down the road
 minutesNewNewNew = []
-for doc in minutesNewNew:
+for doc in tqdm(minutesNewNew):
     topTopicLdaAgg = {i: 0 for i in range(0, 8)}
     topTopicNmfAgg = {i: 0 for i in range(0, 8)}
     for i, para in enumerate(doc["filteredParagraphs"]):

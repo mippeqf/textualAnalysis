@@ -36,7 +36,9 @@ for row in tqdm(minutes):
         paragraphstmp.pop(0)  # Remove the first section before the first p tag
         for para in paragraphstmp:
             if not len(paragraphstmp) and len(para) > 300:
-                paragraphs.append(re.sub('<[^>]*>', '', para))
+                par = re.sub('<[^>]*>', '', para)
+                par = re.sub("(\r\n|\n|\r)", "", par)
+                paragraphs.append(par)
     else:
         paragraphstmp = text.find_all("p")
         for para in paragraphstmp:
@@ -59,6 +61,18 @@ for row in tqdm(minutes):
         DLrawparagraphs.append(rawTokens)  # only tokenized and decapitalised, no type filtering
     minutesNew.append({**row, "filteredParagraphs": DLfilteredparagraphs, "rawParagraphs": DLrawparagraphs})
 
+# Add dissent variable
+minutesNewnew = []
+for row in minutesNew:
+    soup = BeautifulSoup(requests.get(row["link"]).content, "html.parser")
+    text = soup.find("div", id="content") if soup.find("div", id="content") != None else soup.find("body")
+    dissent = 0
+    index = text.text.find("against this action:")+20
+    assert index > 0, ("against this action: not found", row["link"])
+    if "None" in text.text[index:index+10]:
+        dissent = 1
+    minutesNewnew.append({**row, "dissent": dissent})
+
 # TODO Implement bigrams and trigrams!
 # Add bigrams to the filteredParagraphs list, spacy has an implementation called noun chunks
 if False:
@@ -78,6 +92,6 @@ pickle.dump(minutesNew, open(os.path.join(os.path.dirname(__file__), "data", "2D
 # TODO optional: admin section cutoff by occurence of word "vote"
 
 with open(os.path.join(os.path.dirname(__file__), "data", "processedText.csv"), "w", newline="", encoding="utf-8") as f:
-    writer = csv.DictWriter(f, minutesNew[0].keys())
+    writer = csv.DictWriter(f, minutesNewnew[0].keys())
     writer.writeheader()
-    writer.writerows(minutesNew)
+    writer.writerows(minutesNewnew)

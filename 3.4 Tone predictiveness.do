@@ -15,12 +15,15 @@ save ".\statics\vix.dta", replace
 
 // Merge
 merge 1:m date using "C:\Users\Markus\Desktop\BA\textualAnalysis\data\tone.dta", 
-sort date // Just to make sure
 // Delete two of three observations referring to the same document
 drop if strpos(link, "#") // Specific to this dataset!
+sort date // Just to make sure
 
 // Create derivative variables
 gen fomcdummy=cond(missing(year),0,1)
+drop if missing(vix) // business calendar doesn't include non-weekend holidays! Although regression employs casewise deletion, computing deltas will still introduce problems, thus drop missing observations beforehand
+bcal create vix_cal, from(date) replace generate(business_date)
+tsset business_date
 gen d_vix = vix[_n]-vix[_n-1]
 
 // Set dataset up as timeseries to use lag operators in regressions
