@@ -75,3 +75,6 @@ bcal create spy_cal, from(date) replace generate(trading_days)
 tsset trading_days
 
 save ".\3 dataPrepared.dta", replace
+
+keep if _merge == 3
+br

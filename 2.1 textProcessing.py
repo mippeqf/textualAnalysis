@@ -19,6 +19,8 @@ minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "1fom
 minutesNew = []
 
 for row in tqdm(minutes):
+    if row["link"] != "https://www.federalreserve.gov/fomc/minutes/20000202.htm":
+        continue
     soup = BeautifulSoup(requests.get(row["link"]).content, "html.parser")
     body = str(soup)
     text = soup.find("div", id="content") if soup.find("div", id="content") != None else soup.find("body")
@@ -31,13 +33,15 @@ for row in tqdm(minutes):
     # Solution: check whether there are any closing tags at all and apply different splitting method if so.
     paragraphstmp = []
     paragraphs = []
-    if not body.count("</p>"):
+    if body.count("</p></p></p>"):  # bs4 adds closing tags
         paragraphstmp = body.split("<p>")  # Split the document on opening p tags
         paragraphstmp.pop(0)  # Remove the first section before the first p tag
         for para in paragraphstmp:
-            if not len(paragraphstmp) and len(para) > 300:
-                par = re.sub('<[^>]*>', '', para)
-                par = re.sub("(\r\n|\n|\r)", "", par)
+            par = re.sub('<[^>]*>', '', para)
+            par = re.sub("(\r\n|\n|\r|\t)", " ", par)
+            par = re.sub("  ", " ", par)
+            par.strip()
+            if len(par) > 300:
                 paragraphs.append(par)
     else:
         paragraphstmp = text.find_all("p")
@@ -85,7 +89,7 @@ if False:
 # Preserve filtered paragraphs for further use
 # pickle.dump(rawParagraphs, open("data/2rawParagraphs", "wb")) # Depercated
 # pickle.dump(filteredParagraphs, open(os.path.join(os.path.dirname(__file__), "data", "2filteredParagraphs"), "wb")) # Depercated
-pickle.dump(minutesNew, open(os.path.join(os.path.dirname(__file__), "data", "2DLparagraphs"), "wb"))  # Doesn't contain bigrams
+pickle.dump(minutesNewnew, open(os.path.join(os.path.dirname(__file__), "data", "2DLparagraphs"), "wb"))  # Doesn't contain bigrams
 
 # Done for now
 # TODO optional: Fine tune bigram parameter

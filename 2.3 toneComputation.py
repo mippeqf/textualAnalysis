@@ -136,26 +136,32 @@ for row in tqdm(minutes):
     uncertNmf = {"nmfUncert"+str(key+1): value for key, value in uncertScoreAggNmf.items()}
     ldaTopicProp = {"propTopic"+str(key+1): value for key, value in ldaTopicPropAgg.items()}
     nmfTopicProp = {"propTopic"+str(key+1): value for key, value in nmfTopicPropAgg.items()}
-    topTopicPropLda = {"topTopicPropLda"+str(key+1): value for key, value in topTopicPropLdaAgg.items()}
-    topTopicPropNmf = {"topTopicPropNmf"+str(key+1): value for key, value in topTopicPropNmfAgg.items()}
-    topTopicSentLda = {"topTopicSentLda"+str(key+1): value for key, value in topTopicSentLdaAgg.items()}
-    topTopicSentNmf = {"topTopicSentNmf"+str(key+1): value for key, value in topTopicSentNmfAgg.items()}
+    # topTopicPropLda = {"topTopicPropLda"+str(key+1): value for key, value in topTopicPropLdaAgg.items()}
+    # topTopicPropNmf = {"topTopicPropNmf"+str(key+1): value for key, value in topTopicPropNmfAgg.items()}
+    # topTopicSentLda = {"topTopicSentLda"+str(key+1): value for key, value in topTopicSentLdaAgg.items()}
+    # topTopicSentNmf = {"topTopicSentNmf"+str(key+1): value for key, value in topTopicSentNmfAgg.items()}
     minutesNew.append({**row, **netToneLda, **uncertLda, **netToneNmf, **uncertNmf,  **ldaTopicProp, **nmfTopicProp,
-                       **topTopicPropLda, **topTopicPropNmf, **topTopicSentLda, **topTopicSentNmf,
+                       #    **topTopicPropLda, **topTopicPropNmf, **topTopicSentLda, **topTopicSentNmf,
                        "DL_nettone": docLevelNetToneScore, "DL_uncert": docLevelUncertScore,
                        "posnegcnt": posnegcounter, "uncertcnt": uncertcounter})
 
+minutesNewnew = []
+for row in minutes:
+    wordagg = 0
+    for para in row["filteredParagraphs"]:
+        wordagg += len(para)
+    minutesNewnew.append({**row, "totalNumWordsFiltered": wordagg})
 
 # Reduce size of dataset before exporting
-for i, mins in enumerate(minutesNew):
+for i, mins in enumerate(minutesNewnew):
     del mins["rawParagraphs"]
     del mins["filteredParagraphs"]
-    minutesNew[i] = mins
+    minutesNewnew[i] = mins
 # Dump dataset containing timeseries of textual analysis to csv for Stata
 with open(os.path.join(os.path.dirname(__file__), "data", "dataExport.csv"), "w", newline="", encoding="utf-8") as f:
-    writer = csv.DictWriter(f, minutesNew[0].keys())
+    writer = csv.DictWriter(f, minutesNewnew[0].keys())
     writer.writeheader()
-    writer.writerows(minutesNew)
+    writer.writerows(minutesNewnew)
 
 exit()
 
