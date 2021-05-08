@@ -4,7 +4,7 @@
 
 Start with Baker Wurgler, short overview over the sentiment literature
 Examining news releases is particularly interesting because ...
-Summarize every one of the following section in a short paragraph
+Summarize every one of the following sections in a short paragraph
 Clearly state how this thesis might contribute to the literature
 
 ## 1 Data
