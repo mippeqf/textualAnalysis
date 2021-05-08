@@ -38,7 +38,7 @@ lmUNCERT = set(lmRAW.query('Uncertainty > 0')['Word'])
 
 # Compute document-level tone/uncert and topic-specific scores - qualitative topics
 minutes.reverse()
-for i, row in enumerate(tqdm(minutes)):
+for row in tqdm(minutes):
 
     netToneScoreAggLda = {i: 0 for i in range(0, 8)}
     uncertScoreAggLda = {i: 0 for i in range(0, 8)}
@@ -80,7 +80,7 @@ for i, row in enumerate(tqdm(minutes)):
                 uncertScore += 1
 
         # Compute proportion of current paragraph to entire document
-        paraLength = len(row["filteredParagraphs"][i])
+        paraLength = len(paragraph)
         paraProp = paraLength/docLength
 
         # COMPUTE PARAGRAPH-LEVEL METRICS AND ADD TO AGGREGATORS
