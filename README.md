@@ -100,3 +100,7 @@ Aggregate tone using **sign** instead of absolute score - every paragraph is eit
 ## 6 Conclusion
 
 tbd
+
+## 7 Outlook
+
+- Results could be improved by testing differing numbers of topics based eg on the coherence score. One likely contributer that my results deviate slightly from JeWu is the fact that I do not trim the admin section, as this is hard to do both objectively and thereby in an algorithmic fashion. A higher number of topics (eg 10) should allow for separation of topics in the admin section and thereby improve topic coherence in the core section.

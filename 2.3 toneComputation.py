@@ -134,13 +134,13 @@ for row in tqdm(minutes):
     uncertLda = {"ldaUncert"+str(key+1): value for key, value in uncertScoreAggLda.items()}
     netToneNmf = {"nmfNetTone"+str(key+1): value for key, value in netToneScoreAggNmf.items()}
     uncertNmf = {"nmfUncert"+str(key+1): value for key, value in uncertScoreAggNmf.items()}
-    ldaTopicProp = {"propTopic"+str(key+1): value for key, value in ldaTopicPropAgg.items()}
-    nmfTopicProp = {"propTopic"+str(key+1): value for key, value in nmfTopicPropAgg.items()}
+    propLda = {"ldaProp"+str(key+1): value for key, value in ldaTopicPropAgg.items()}
+    propNmf = {"nmfProp"+str(key+1): value for key, value in nmfTopicPropAgg.items()}
     # topTopicPropLda = {"topTopicPropLda"+str(key+1): value for key, value in topTopicPropLdaAgg.items()}
     # topTopicPropNmf = {"topTopicPropNmf"+str(key+1): value for key, value in topTopicPropNmfAgg.items()}
     # topTopicSentLda = {"topTopicSentLda"+str(key+1): value for key, value in topTopicSentLdaAgg.items()}
     # topTopicSentNmf = {"topTopicSentNmf"+str(key+1): value for key, value in topTopicSentNmfAgg.items()}
-    minutesNew.append({**row, **netToneLda, **uncertLda, **netToneNmf, **uncertNmf,  **ldaTopicProp, **nmfTopicProp,
+    minutesNew.append({**row, **netToneLda, **uncertLda, **netToneNmf, **uncertNmf,  **propLda, **propNmf,
                        #    **topTopicPropLda, **topTopicPropNmf, **topTopicSentLda, **topTopicSentNmf,
                        "DL_nettone": docLevelNetToneScore, "DL_uncert": docLevelUncertScore,
                        "posnegcnt": posnegcounter, "uncertcnt": uncertcounter})

@@ -51,7 +51,7 @@ PASSES = 50  # number of iterations to train the model, 50 is default
 
 # Haven't tested multicore training yet, only works with wrapping te following in - if __name__ == "__main__":
 lda = gensim.models.LdaModel(
-    corpus=corpus,
+    corpus=transtfidf,  # Use tfidf weighting to start off, improves coherence value convergence
     id2word=dct,
     chunksize=2000,
     alpha='auto',
@@ -71,7 +71,6 @@ gensim.corpora.MmCorpus.serialize("models/corpus", corpus)
 # TODO Concern by Schmeling and Wagner (very end of section 2.2) that topic modelling could induce hindsight
 # bias, as model is trained on entire corpus of articles.
 # Do a robustness test where training is only done on the past 5-10 years (simply start in 1993)
-# TODO Use TFIDF corpus instead of vanilla bag-of-words corpus (and figure out why that's better)
 
 
 # NMF
