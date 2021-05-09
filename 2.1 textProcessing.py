@@ -57,7 +57,7 @@ for row in tqdm(minutes):
         filteredTokens = []
         rawTokens = []
         for token in paraClassified:
-            if token.is_stop == False and token.is_punct == False and (token.pos_ == "NOUN" or token.pos_ == "ADJ" or token.pos_ == "VERB"):
+            if not token.is_stop and not token.is_punct and (token.pos_ == "NOUN" or token.pos_ == "ADJ" or token.pos_ == "VERB"):
                 filteredTokens.append(token.lemma_.lower())
             rawTokens.append(token.lower_)
         DLfilteredparagraphs.append(filteredTokens)

@@ -24,26 +24,26 @@ save "./data/tone.dta", replace
 
 // Minutes descriptives
 sort date
-line uncertcnt date
-graph export ".\img\totalnumwordsfiltered.png", as(png) replace
-line posnegcnt date
-line dl_nettone date
-graph export ".\img\nettoneProgression.png", as(png) replace
-line dl_nettone_change date
-graph export ".\img\nettoneChangeProgression.png", as(png) replace
-line dl_uncert date
-graph export ".\img\uncertProgression.png", as(png) replace
-line dl_uncert_change date
-graph export ".\img\uncertChangeProgression.png", as(png) replace
-line dl_nettone dl_uncert date
-graph export ".\img\baseProgression.png", as(png) replace
-line dl_nettone_change dl_uncert_change date
-graph export ".\img\changeProgresion.png", as(png) replace
-line ldaprop* date
-graph export ".\img\ldaTopicProportionProgression.png", as(png) replace
-line nmfprop* date
-graph export ".\img\nmfTopicProportionProgression.png", as(png) replace
-exit
+// line uncertcnt date
+// graph export ".\img\totalnumwordsfiltered.png", as(png) replace
+// line posnegcnt date
+// line dl_nettone date
+// graph export ".\img\nettoneProgression.png", as(png) replace
+// line dl_nettone_change date
+// graph export ".\img\nettoneChangeProgression.png", as(png) replace
+// line dl_uncert date
+// graph export ".\img\uncertProgression.png", as(png) replace
+// line dl_uncert_change date
+// graph export ".\img\uncertChangeProgression.png", as(png) replace
+// line dl_nettone dl_uncert date
+// graph export ".\img\baseProgression.png", as(png) replace
+// line dl_nettone_change dl_uncert_change date
+// graph export ".\img\changeProgresion.png", as(png) replace
+// line ldaprop* date
+// graph export ".\img\ldaTopicProportionProgression.png", as(png) replace
+// line nmfprop* date
+// graph export ".\img\nmfTopicProportionProgression.png", as(png) replace
+line totalnumwordsfiltered date
 
 // Parse financial data
 import delimited "C:\Users\Markus\Desktop\BA\textualAnalysis\statics\spyYF.csv", clear
@@ -82,4 +82,6 @@ tsset trading_days
 save ".\3 dataPrepared.dta", replace
 
 keep if _merge == 3
+// gen ma_totalwords = 0.2*totalnumwordsfiltered[_n-2] + 0.2*totalnumwordsfiltered[_n-1] + 0.2*totalnumwordsfiltered[_n] + 0.2*totalnumwordsfiltered[_n+1] + 0.2*totalnumwordsfiltered[_n+2]
+// line ma_totalwords date
 br

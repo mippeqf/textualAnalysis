@@ -5,8 +5,6 @@ import gensim.models.nmf
 import gensim.corpora
 import pickle
 import logging
-from wordcloud import WordCloud
-import matplotlib.pyplot as plt
 import os.path
 
 # Set up logging
@@ -44,20 +42,20 @@ transtfidf = tfidf[corpus]
 
 # Train the LDA model
 SEED = 130
-TOPICS = 8  # number of overall topics, following Jegadeesh&Wu
+NUM_TOPICS = 10  # number of overall topics, following Jegadeesh&Wu
 ALPHA = 0.15  #
 ETA = 1.25  #
 PASSES = 50  # number of iterations to train the model, 50 is default
 
 # Haven't tested multicore training yet, only works with wrapping te following in - if __name__ == "__main__":
 lda = gensim.models.LdaModel(
-    corpus=transtfidf,  # Use tfidf weighting to start off, improves coherence value convergence
+    corpus=corpus,  # ??? Use tfidf weighting to start off, improves coherence value convergence
     id2word=dct,
     chunksize=2000,
     alpha='auto',
     eta='auto',
     iterations=400,
-    num_topics=TOPICS,
+    num_topics=NUM_TOPICS,
     passes=PASSES,
     eval_every=None)
 
@@ -76,7 +74,7 @@ gensim.corpora.MmCorpus.serialize("models/corpus", corpus)
 # NMF
 nmf = gensim.models.nmf.Nmf(
     corpus=corpus,
-    num_topics=TOPICS,
+    num_topics=NUM_TOPICS,
     id2word=dct,
     chunksize=2000,
     passes=5,

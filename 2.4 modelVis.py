@@ -29,10 +29,9 @@ dct = gensim.utils.SaveLoad.load("models/dct")
 corpus = gensim.corpora.MmCorpus("models/corpus")
 nmf = Nmf.load("models/nmf")
 
-if False:
-    ldaDisp = gensimvis.prepare(lda, corpus, dct, sort_topics=False)
-    pyLDAvis.save_html(ldaDisp, "ldavistest.html")
-    os.startfile(".\ldavistest.html")
+ldaDisp = gensimvis.prepare(lda, corpus, dct, sort_topics=False)
+pyLDAvis.save_html(ldaDisp, "ldavistest.html")
+os.startfile(".\ldavistest.html")
 
 
 #####################################################################################
@@ -44,10 +43,12 @@ if False:
 # minspickeled = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "2DLparagraphs"), "rb"))
 # minutes = [para for doc in minspickeled for para in doc["filteredParagraphs"]]
 
+NUM_TOPICS = 10
+
 if not os.path.exists("img"):
     os.mkdir("img")
 
-for topic in range(0, 8):
+for topic in range(0, NUM_TOPICS):
     termslda = lda.show_topic(topic, topn=50)  # get_topic_terms would return words as dict IDs, not strings
     # Model returns list of tuples, wordcloud wants a dictionary instead
     wordcloudlda = WordCloud(background_color="white").generate_from_frequencies(dict(termslda))
@@ -55,7 +56,7 @@ for topic in range(0, 8):
     plt.axis("off")
     plt.savefig(f"img/lda_topic_{topic+1}.png")
 
-for topic in range(0, 8):
+for topic in range(0, NUM_TOPICS):
     termsnmf = nmf.show_topic(topic, topn=50)
     # Model returns list of tuples, wordcloud wants a dictionary instead
     wordcloudnmf = WordCloud(background_color="white").generate_from_frequencies(dict(termsnmf))
