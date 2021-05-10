@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import gensim.corpora
 import gensim.utils
+from envVars import NUM_TOPICS
 
 #  TODO
 # - Proportion evolution (see Medium article)
@@ -43,7 +44,7 @@ os.startfile(".\ldavistest.html")
 # minspickeled = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "2DLparagraphs"), "rb"))
 # minutes = [para for doc in minspickeled for para in doc["filteredParagraphs"]]
 
-NUM_TOPICS = 10
+# NUM_TOPICS = 10
 
 if not os.path.exists("img"):
     os.mkdir("img")

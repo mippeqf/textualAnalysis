@@ -21,6 +21,7 @@ import pandas as pd
 import gensim.utils
 import os.path
 from tqdm import tqdm
+from envVars import NUM_TOPICS
 
 minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "2DLparagraphs"), "rb"))
 # Minutes are a list of dictionaries with fields year, meeting, link, and list of lists containing preprocessed paragraphs
@@ -36,7 +37,7 @@ lmPOS = set(lmRAW.query('Positive > 0')['Word'])
 lmNEG = set(lmRAW.query('Negative > 0')['Word'])
 lmUNCERT = set(lmRAW.query('Uncertainty > 0')['Word'])
 
-NUM_TOPICS = 10
+# NUM_TOPICS = 10
 
 # Compute document-level tone/uncert and topic-specific scores - qualitative topics
 minutes.reverse()
@@ -55,7 +56,8 @@ for row in tqdm(minutes):
     docLength = sum([len(para) for para in row["filteredParagraphs"]])  # total length of entire document
     docLevelNetToneScore = 0
     docLevelUncertScore = 0
-    posnegcounter = 0
+    poscounter = 0
+    negcounter = 0
     uncertcounter = 0
 
     for paragraph in row["filteredParagraphs"]:
@@ -115,7 +117,8 @@ for row in tqdm(minutes):
         # Document-level metrics
         docLevelNetToneScore += (posScore-negScore)*paraProp
         docLevelUncertScore += uncertScore*paraProp
-        posnegcounter += posScore+negScore
+        poscounter += posScore
+        negcounter += negScore
         uncertcounter += uncertScore
 
     # COMPUTE FINAL DOCUMENT-LEVEL METRICS
@@ -145,7 +148,7 @@ for row in tqdm(minutes):
     minutesNew.append({**row, **netToneLda, **uncertLda, **netToneNmf, **uncertNmf,  **propLda, **propNmf,
                        #    **topTopicPropLda, **topTopicPropNmf, **topTopicSentLda, **topTopicSentNmf,
                        "DL_nettone": docLevelNetToneScore, "DL_uncert": docLevelUncertScore,
-                       "posnegcnt": posnegcounter, "uncertcnt": uncertcounter})
+                       "poscnt": poscounter, "negcnt": negcounter, "uncertcnt": uncertcounter})
 
 minutesNewnew = []
 for row in minutesNew:

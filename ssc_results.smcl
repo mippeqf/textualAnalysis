@@ -1,0 +1,144 @@
+{smcl}
+
+{txt}{net "from http://repec.org/bocode":SSC} Stata modules created or revised 2021-04-10 to 2021-05-10
+{hline}
+
+{net "describe http://repec.org/bocode/d/docd":DOCD}
+{txt} module to change the working directory before executing a do-file{txt} Authors: Hendri Adriaens       Req: Stata version 10
+{txt} Created: 2021-04-28
+
+{net "describe http://repec.org/bocode/v/vc_pack":VC_PACK}
+{txt} module for the estimation of smooth varying coefficient models {txt} Authors: Fernando Rios-Avila       Req: Stata version 8
+{txt} Created: 2021-04-25
+
+{net "describe http://repec.org/bocode/m/minmse":MINMSE}
+{txt} module to create balanced groups for treatment in experiments with one or several treatment arms {txt} Authors: Sebastian O. Schneider       Req: Stata version 13.1
+{txt} Created: 2021-04-24
+
+{net "describe http://repec.org/bocode/s/suregr":SUREGR}
+{txt} module to calculate robust, or cluster-robust variance after sureg{txt} Authors: Gueorgui I. Kolev       Req: Stata version 11
+{txt} Created: 2021-04-20
+
+{net "describe http://repec.org/bocode/x/xtrobreg":XTROBREG}
+{txt} module providing pairwise-differences and first-differences robust regression estimators{txt} Authors: Ben Jann  Vincenzo Verardi       Req: Stata version 11 and robreg, moremata from SSC (q.v.)
+{txt} Revised: 2021-04-23
+
+{net "describe http://repec.org/bocode/r/relogit":RELOGIT}
+{txt} module to perform Rare Event Logistic Regression{txt} Authors: Michael Tomz   Gary King   Langche Zeng       Req: Stata version 6
+{txt} Created: 2021-04-20
+
+{net "describe http://repec.org/bocode/x/xtglsr":XTGLSR}
+{txt} module to calculate robust, or cluster-robust variance after xtgls{txt} Authors: Gueorgui I. Kolev       Req: Stata version 11
+{txt} Created: 2021-04-15
+
+{net "describe http://repec.org/bocode/x/xtgranger":XTGRANGER}
+{txt} module for improved Granger non-causality testing in heterogeneous and homogeneous panel data{txt} Authors: Jiaqi Xiao  Yiannis Karavias  Vasilis Sarafidis       Req: Stata version 12 
+{txt} Created: 2021-04-15
+
+{net "describe http://repec.org/bocode/s/susoapi":SUSOAPI}
+{txt} module to provide Survey Solutions API client class for Stata{txt} Authors: Sergiy Radyakin       Req: Stata version 16
+{txt} Created: 2021-04-12
+
+{net "describe http://repec.org/bocode/r/robreg":ROBREG}
+{txt} module providing robust regression estimators{txt} Authors: Ben Jann       Req: Stata version 11 and moremata from SSC (q.v.)
+{txt} Revised: 2021-04-23
+
+{net "describe http://repec.org/bocode/m/multivrs":MULTIVRS}
+{txt} module to conduct multiverse analysis{txt} Authors: Cristobal Young  Katherine Holsteen       Req: Stata version 12.1 and moremata, valuesof from SSC (q.v.)
+{txt} Revised: 2021-04-15
+
+{net "describe http://repec.org/bocode/s/songbl":SONGBL}
+{txt} module to search and share Stata resources and blogs{txt} Authors: Song Bolin       Req: Stata version 16 and the ability to read Chinese
+{txt} Revised: 2021-04-11
+
+{net "describe http://repec.org/bocode/q/qregplot":QREGPLOT}
+{txt} module for plotting coefficients of a Quantile Regression{txt} Authors: Fernando Rios-Avila       Req: Stata version 11
+{txt} Revised: 2021-04-24
+
+{net "describe http://repec.org/bocode/e/eventstudyweights":EVENTSTUDYWEIGHTS}
+{txt} module to estimate the implied weights on the cohort-specific average treatment effects on the treated (CATTs) (event study specifications){txt} Authors: Liyang Sun       Req: Stata version 13 and hdfe from SSC (q.v.)
+{txt} Revised: 2021-04-18
+
+{net "describe http://repec.org/bocode/m/metadta":METADTA}
+{txt} module to perform fixed- and random-effects meta-analysis and meta-regression of diagnostic accuracy studies{txt} Authors: Victoria Nyawira Nyaga       Req: Stata version 14
+{txt} Revised: 2021-05-01
+
+{net "describe http://repec.org/bocode/x/xtheckmanfe":XTHECKMANFE}
+{txt} module to fit panel data models in the presence of endogeneity and selection{txt} Authors: Fernando Rios-Avila       Req: Stata version 13 and ftools from SSC (q.v.)
+{txt} Revised: 2021-04-24
+
+{net "describe http://repec.org/bocode/m/mmqreg":MMQREG}
+{txt} module to estimate quantile regressions via Method of Moments{txt} Authors: Fernando Rios-Avila       Req: Stata version 13 and hdfe, ftools from SSC (q.v.)
+{txt} Revised: 2021-04-24
+
+{net "describe http://repec.org/bocode/m/metapreg":METAPREG}
+{txt} module to compute fixed and random effects meta-analysis and meta-regression of proportions{txt} Authors: Victoria Nyawira Nyaga       Req: Stata version 14
+{txt} Revised: 2021-05-01
+
+{net "describe http://repec.org/bocode/d/domme":DOMME}
+{txt} module to conduct dominance analysis with multiple equation models{txt} Authors: Joseph N. Luchman       Req: Stata version 15.1
+{txt} Revised: 2021-04-19
+
+{net "describe http://repec.org/bocode/d/did_multiplegt":DID_MULTIPLEGT}
+{txt} module to estimate sharp Difference-in-Difference designs with multiple groups and periods{txt} Authors:  Clément de Chaisemartin    Xavier D'Haultfoeuille   Yannick Guyonvarch       Req: Stata version 13.1 and fuzzydid from SSC (q.v.)
+{txt} Revised: 2021-05-02
+
+{net "describe http://repec.org/bocode/x/xtgeebcv":XTGEEBCV}
+{txt} module to compute bias-corrected (small-sample) standard errors for generalized estimating equations{txt} Authors: John A. Gallis   Fan Li  Elizabeth L. Turner       Req: Stata version 16
+{txt} Revised: 2021-04-11
+
+{net "describe http://repec.org/bocode/s/scto":SCTO}
+{txt} module to provide utility functions for data collected using SurveyCTO {txt} Authors: SurveyCTO       Req: Stata version 13
+{txt} Revised: 2021-05-02
+
+{net "describe http://repec.org/bocode/w/wtdttt":WTDTTT}
+{txt} module to estimate parameters of the ordinary and reverse Waiting Time Distribution (WTD) by maximum likelihood{txt} Authors: Katrine Bødkergaard Nielsen  Henrik Stovring       Req: Stata version 14
+{txt} Revised: 2021-04-15
+
+{net "describe http://repec.org/bocode/r/rangejoin":RANGEJOIN}
+{txt} module to form pairwise combinations if a key variable is within range{txt} Authors: Robert Picard       Req: Stata version 11 and rangestat from SSC 
+{txt} Revised: 2021-04-15
+
+{net "describe http://repec.org/bocode/b/boottest":BOOTTEST}
+{txt} module to provide fast execution of the wild bootstrap with null imposed{txt} Authors: David Roodman       Req: Stata version 13
+{txt} Revised: 2021-04-11
+
+{net "describe http://repec.org/bocode/p/psidtools":PSIDTOOLS}
+{txt} module to facilitate access to Panel Study of Income Dynamics (PSID) {txt} Authors: Ulrich Kohler       Req: Stata version 13
+{txt} Revised: 2021-04-11
+
+{net "describe http://repec.org/bocode/i/ipdmetan":IPDMETAN}
+{txt} module for performing two-stage IPD meta-analysis {txt} Authors: David Fisher       Req: Stata version 11 and metan from SSC (q.v.)
+{txt} Revised: 2021-05-02
+
+{net "describe http://repec.org/bocode/x/xtsemipar":XTSEMIPAR}
+{txt} module to compute Semiparametric Fixed-Effects Estimator of Baltagi and Li {txt} Authors: François Libois  Vincenzo Verardi       Req: Stata version 13
+{txt} Revised: 2021-04-23
+
+{net "describe http://repec.org/bocode/m/moments2":MOMENTS2}
+{txt} module to compute skewness and kurtosis measures{txt} Authors: Dirk Enzmann       Req: Stata version 8.2
+{txt} Revised: 2021-05-02
+
+{net "describe http://repec.org/bocode/r/robreg10":ROBREG10}
+{txt} module providing robust regression estimators{txt} Authors: Ben Jann       Req: Stata version 10.1 and moremata from SSC (q.v.)
+{txt} Revised: 2021-04-11
+
+{net "describe http://repec.org/bocode/f/firthlogit":FIRTHLOGIT}
+{txt} module to calculate bias reduction in logistic regression{txt} Authors: Joseph Coveney       Req: Stata version 13.1
+{txt} Revised: 2021-04-25
+
+{net "describe http://repec.org/bocode/n/newsimpact":NEWSIMPACT}
+{txt} module to compute news impact curve for ARCH models{txt} Authors: Sune Karlsson       Req: Stata version 9
+{txt} Revised: 2021-04-26
+
+{net "describe http://repec.org/bocode/m/metan":METAN}
+{txt} module for fixed and random effects meta-analysis{txt} Authors: David Fisher  Ross Harris  Mike Bradburn  Jon Deeks  Roger Harbord  Doug Altman  Thomas Steichen  Jonathan Sterne  Julian Higgins       Req: Stata version 9 (version 9 for metan9, or version 7 for metan7)
+{txt} Revised: 2021-05-02
+
+{net "describe http://repec.org/bocode/m/moremata":MOREMATA}
+{txt} module (Mata) to provide various functions{txt} Authors: Ben Jann       Req: Stata version 9
+{txt} Revised: 2021-04-23
+
+{hline}
+{txt} End of recent additions and updates
+

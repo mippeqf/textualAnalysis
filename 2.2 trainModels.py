@@ -6,6 +6,7 @@ import gensim.corpora
 import pickle
 import logging
 import os.path
+from envVars import NUM_TOPICS
 
 # Set up logging
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
@@ -42,7 +43,7 @@ transtfidf = tfidf[corpus]
 
 # Train the LDA model
 SEED = 130
-NUM_TOPICS = 10  # number of overall topics, following Jegadeesh&Wu
+# NUM_TOPICS = 10  # number of overall topics, following Jegadeesh&Wu
 ALPHA = 0.15  #
 ETA = 1.25  #
 PASSES = 50  # number of iterations to train the model, 50 is default

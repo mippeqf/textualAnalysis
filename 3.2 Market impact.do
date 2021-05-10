@@ -3,73 +3,9 @@ clear
 set scheme s2color
 // set scheme s1mono
 eststo clear
+set graphics off
 
-
-import delimited "C:\Users\Markus\Desktop\BA\textualAnalysis\statics\BOPGSTB.csv", clear
-tostring date, replace
-generate date1 = date(date,"YMD"), after(date)
-format %tdDD/NN/CCYY date1
-drop date
-rename date1 date
-rename bopgstb tradebalance
-save ".\statics\tb.dta", replace
-
-import delimited "C:\Users\Markus\Desktop\BA\textualAnalysis\statics\CPIAUCSL.csv", clear
-tostring date, replace
-generate date1 = date(date,"YMD"), after(date)
-format %tdDD/NN/CCYY date1
-drop date
-rename date1 date
-rename cpiaucsl cpi
-save ".\statics\cpi.dta", replace
-
-import delimited "C:\Users\Markus\Desktop\BA\textualAnalysis\statics\FEDFUNDS.csv", clear
-tostring date, replace
-generate date1 = date(date,"YMD"), after(date)
-format %tdDD/NN/CCYY date1
-drop date
-rename date1 date
-rename fedfunds interest
-save ".\statics\interest.dta", replace
-
-import delimited "C:\Users\Markus\Desktop\BA\textualAnalysis\statics\UNRATE.csv", clear
-tostring date, replace
-generate date1 = date(date,"YMD"), after(date)
-format %tdDD/NN/CCYY date1
-drop date
-rename date1 date
-rename unrate unemployment
-save ".\statics\unemployment.dta", replace
-
-import delimited "C:\Users\Markus\Desktop\BA\textualAnalysis\statics\USREC.csv", clear
-tostring date, replace
-generate date1 = date(date,"YMD"), after(date)
-format %tdDD/NN/CCYY date1
-drop date
-rename date1 date
-rename usrec recession
-save ".\statics\recession.dta", replace
-
-use ".\3 dataPrepared.dta", clear
-merge 1:m date using ".\statics\tb.dta", nogen
-merge 1:m date using ".\statics\cpi.dta", nogen
-merge 1:m date using ".\statics\interest.dta", nogen
-merge 1:m date using ".\statics\unemployment.dta", nogen
-merge 1:m date using ".\statics\recession.dta", nogen
-drop if date < td(29january1993)
-
-// Set dataset up as timeseries to use lag operators in regressions
-drop trading_days
-bcal create spy_cal, from(date) replace generate(trading_days)
-tsset trading_days
-
-// Lag control variables forwards
-replace cpi = cpi[_n] if missing(cpi)
-
-local controls "tradebalance cpi interest unemployment recession"
-
-// Start with volatility (controlled for k lags), then move onto directional changes - 1. Does anything happen at all? - 2. Does stuff happen the way our model would predict (pos tone means higher equity)
-// Return is the same as directional change in JeWu
+use ".\data\3 dataPrepared.dta", clear
 
 // -----------------------------------------------------
 // "CONTROL REGRESSION" - fomcdummy
