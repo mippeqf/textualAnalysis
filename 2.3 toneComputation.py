@@ -150,12 +150,15 @@ for row in tqdm(minutes):
                        "DL_nettone": docLevelNetToneScore, "DL_uncert": docLevelUncertScore,
                        "poscnt": poscounter, "negcnt": negcounter, "uncertcnt": uncertcounter})
 
+# Append some basic word and paragraph count variables
 minutesNewnew = []
 for row in minutesNew:
-    wordagg = 0
-    for para in row["filteredParagraphs"]:
-        wordagg += len(para)
-    minutesNewnew.append({**row, "totalNumWordsFiltered": wordagg})
+    paraCntFiltered = len(row["filteredParagraphs"])
+    paraCntRaw = len(row["rawParagraphs"])
+    wordCntFiltered = sum([len(para) for para in row["filteredParagraphs"]])
+    wordCntRaw = sum([len(para) for para in row["rawParagraphs"]])
+    minutesNewnew.append({**row, "wordCntFiltered": wordCntFiltered, "wordCntRaw": wordCntFiltered,
+                          "paraCntFiltered": wordCntFiltered, "paraCntRaw": wordCntFiltered})
 
 # Reduce size of dataset before exporting
 for i, mins in enumerate(minutesNewnew):
@@ -167,5 +170,13 @@ with open(os.path.join(os.path.dirname(__file__), "data", "dataExport.csv"), "w"
     writer = csv.DictWriter(f, minutesNewnew[0].keys())
     writer.writeheader()
     writer.writerows(minutesNewnew)
+pickle.dump(minutesNewnew, open(os.path.join(os.path.dirname(__file__), "data", "dataExport"), "wb"))  # Doesn't contain bigrams
 
-exit()
+# Print out a few word/paragraph count statistics for the entire dataset
+paraCount = sum([len(mins["filteredParagraphs"]) for mins in minutes])
+wordCount = sum([len(para) for mins in minutes for para in mins["filteredParagraphs"]])
+print("Number of documents", len(minutes))
+print("Total number of paragraphs", paraCount)
+print("Total number of words", wordCount)
+print("Average number of paragraphs per document", round(paraCount/len(minutes)))
+print("Average number of words per document", round(wordCount/len(minutes)))

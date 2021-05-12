@@ -41,12 +41,8 @@ corpus = [dct.doc2bow(paragraph) for paragraph in minutes]
 tfidf = gensim.models.TfidfModel(corpus)
 transtfidf = tfidf[corpus]
 
-# Train the LDA model
-SEED = 130
 # NUM_TOPICS = 10  # number of overall topics, following Jegadeesh&Wu
-ALPHA = 0.15  #
-ETA = 1.25  #
-PASSES = 50  # number of iterations to train the model, 50 is default
+PASSES = 100  # number of iterations to train the model, 50 is default
 
 # Haven't tested multicore training yet, only works with wrapping te following in - if __name__ == "__main__":
 lda = gensim.models.LdaModel(
@@ -70,7 +66,6 @@ gensim.corpora.MmCorpus.serialize("models/corpus", corpus)
 # TODO Concern by Schmeling and Wagner (very end of section 2.2) that topic modelling could induce hindsight
 # bias, as model is trained on entire corpus of articles.
 # Do a robustness test where training is only done on the past 5-10 years (simply start in 1993)
-
 
 # NMF
 nmf = gensim.models.nmf.Nmf(

@@ -9,6 +9,8 @@ from wordcloud import WordCloud
 import gensim.corpora
 import gensim.utils
 from envVars import NUM_TOPICS
+import pickle
+import pandas as pd
 
 #  TODO
 # - Proportion evolution (see Medium article)
@@ -19,35 +21,34 @@ from envVars import NUM_TOPICS
 # https://www.machinelearningplus.com/nlp/topic-modeling-gensim-python/#15visualizethetopicskeywords
 # https://www.machinelearningplus.com/nlp/topic-modeling-visualization-how-to-present-results-lda-models/#14.-pyLDAVis
 
-#################################################################
-# LDAvis
-#################################################################
+if not os.path.exists("img"):
+    os.mkdir("img")
 
-# logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+#####################################################################################
+# Fig 1 JeWu - intertemporal progression of topic mixture
+#####################################################################################
+minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "dataExport"), "rb"))
+df = pd.DataFrame(minutes)
+df = df[["release", "ldaProp1", "ldaProp2", "ldaProp3", "ldaProp4", "ldaProp5", "ldaProp6", "ldaProp7", "ldaProp8", "ldaProp9", "ldaProp10"]]
+df.plot.area(stacked=True, x="release").legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
+plt.savefig("img/ldaPropStacked.png")
+plt.clf()
+
+minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "dataExport"), "rb"))
+df = pd.DataFrame(minutes)
+df = df[["release", "nmfProp1", "nmfProp2", "nmfProp3", "nmfProp4", "nmfProp5", "nmfProp6", "nmfProp7", "nmfProp8", "nmfProp9", "nmfProp10"]]
+df.plot.area(stacked=True, x="release").legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
+plt.savefig("img/nmfPropStacked.png")
+plt.clf()
+
+#####################################################################################
+# Wordcloud by topic
+#####################################################################################
 
 lda = LdaModel.load("models/lda")
 dct = gensim.utils.SaveLoad.load("models/dct")
 corpus = gensim.corpora.MmCorpus("models/corpus")
 nmf = Nmf.load("models/nmf")
-
-ldaDisp = gensimvis.prepare(lda, corpus, dct, sort_topics=False)
-pyLDAvis.save_html(ldaDisp, "ldavistest.html")
-os.startfile(".\ldavistest.html")
-
-
-#####################################################################################
-# Fig 1 JeWu - intertemporal progression of topic mixture
-#####################################################################################
-
-# lda.print_topics(5, 10)
-
-# minspickeled = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "2DLparagraphs"), "rb"))
-# minutes = [para for doc in minspickeled for para in doc["filteredParagraphs"]]
-
-# NUM_TOPICS = 10
-
-if not os.path.exists("img"):
-    os.mkdir("img")
 
 for topic in range(0, NUM_TOPICS):
     termslda = lda.show_topic(topic, topn=50)  # get_topic_terms would return words as dict IDs, not strings
@@ -56,6 +57,7 @@ for topic in range(0, NUM_TOPICS):
     plt.imshow(wordcloudlda)
     plt.axis("off")
     plt.savefig(f"img/lda_topic_{topic+1}.png")
+    plt.clf()
 
 for topic in range(0, NUM_TOPICS):
     termsnmf = nmf.show_topic(topic, topn=50)
@@ -64,3 +66,15 @@ for topic in range(0, NUM_TOPICS):
     plt.imshow(wordcloudnmf)
     plt.axis("off")
     plt.savefig(f"img/nmf_topic_{topic+1}.png")
+    plt.clf()
+
+
+#################################################################
+# LDAvis
+#################################################################
+
+# logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+
+ldaDisp = gensimvis.prepare(lda, corpus, dct, sort_topics=False)
+pyLDAvis.save_html(ldaDisp, "ldavistest.html")
+os.startfile(".\ldavistest.html")
