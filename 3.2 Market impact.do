@@ -24,26 +24,26 @@ esttab, ar2
 // -----------------------------------------------------
 // Volume
 eststo clear
-quietly eststo: reg V dl_nettone
-quietly eststo: reg V dl_uncert
-quietly eststo: reg V dissent
-quietly eststo: reg V dl_nettone dl_uncert dissent
-quietly eststo: reg V L(1/10).V dl_nettone
-quietly eststo: reg V L(1/10).V dl_uncert
-quietly eststo: reg V L(1/10).V dissent
-quietly eststo: reg V L(1/10).V dl_nettone dl_uncert dissent
+quietly eststo: reg V dl_nettone, r
+quietly eststo: reg V dl_uncert, r
+quietly eststo: reg V dissent, r
+quietly eststo: reg V dl_nettone dl_uncert dissent, r
+quietly eststo: reg V L(1/10).V dl_nettone, r
+quietly eststo: reg V L(1/10).V dl_uncert, r
+quietly eststo: reg V L(1/10).V dissent, r
+quietly eststo: reg V L(1/10).V dl_nettone dl_uncert dissent, r
 esttab, ar2 indicate("Lagged volatility" = L*.V) 
 
 // Return
 eststo clear
-quietly eststo: reg R_intra dl_nettone
-quietly eststo: reg R_intra dl_uncert
-quietly eststo: reg R_intra dissent
-quietly eststo: reg R_intra dl_nettone dl_uncert dissent
-quietly eststo: reg R_24 dl_nettone
-quietly eststo: reg R_24 dl_uncert
-quietly eststo: reg R_24 dissent
-quietly eststo: reg R_24 dl_nettone dl_uncert dissent
+quietly eststo: reg R_intra dl_nettone, r
+quietly eststo: reg R_intra dl_uncert, r
+quietly eststo: reg R_intra dissent, r
+quietly eststo: reg R_intra dl_nettone dl_uncert dissent, r
+quietly eststo: reg R_24 dl_nettone, r
+quietly eststo: reg R_24 dl_uncert, r
+quietly eststo: reg R_24 dissent, r
+quietly eststo: reg R_24 dl_nettone dl_uncert dissent, r
 esttab, ar2
 
 // -----------------------------------------------------
@@ -54,46 +54,46 @@ esttab, ar2
 
 // QUANTITATIVE
 eststo clear
-quietly eststo: reg V L(1/10).V ldaprop*, nocons
-quietly eststo: reg V ldaprop*, nocons
-quietly eststo: reg R_intra ldaprop*, nocons
-quietly eststo: reg R_24 ldaprop*, nocons
+quietly eststo: reg V L(1/10).V ldaprop*, nocons r
+quietly eststo: reg V ldaprop*, nocons r
+quietly eststo: reg R_intra ldaprop*, nocons r
+quietly eststo: reg R_24 ldaprop*, nocons r
 esttab, ar2 indicate("Lagged volatility" = L*.V)
 // Financial markets and consumption are significant. Coeff of consumption is negative, thus talk about consumption can be assumed to overall be more positive than negative. - Can I control for the tone of consumption to determine whether the quantity is actually relevant? Not really, best to just use general macro variables for that
 eststo clear
-quietly eststo: reg V L(1/10).V nmfprop*, nocons
-quietly eststo: reg V nmfprop*, nocons
-quietly eststo: reg R_intra nmfprop*, nocons
-quietly eststo: reg R_24 nmfprop*, nocons
+quietly eststo: reg V L(1/10).V nmfprop*, nocons r
+quietly eststo: reg V nmfprop*, nocons r
+quietly eststo: reg R_intra nmfprop*, nocons r
+quietly eststo: reg R_24 nmfprop*, nocons r
 esttab, ar2 indicate("Lagged volatility" = L*.V)
 
 
 // QUALITATIVE
 // Net tone LDA
 eststo clear
-quietly eststo: reg V L(1/10).V ldanettone*, nocons
-quietly eststo: reg V ldanettone*, nocons
-quietly eststo: reg R_intra ldanettone*, nocons
-quietly eststo: reg R_24 ldanettone*, nocons
+quietly eststo: reg V L(1/10).V ldanettone*, nocons r
+quietly eststo: reg V ldanettone*, nocons r
+quietly eststo: reg R_intra ldanettone*, nocons r
+quietly eststo: reg R_24 ldanettone*, nocons r
 esttab, ar2 indicate("Lagged volatility" = L*.V)
 // Nettone NMF
 eststo clear
-quietly eststo: reg V L(1/10).V nmfnettone*, nocons
-quietly eststo: reg V nmfnettone*, nocons
-quietly eststo: reg R_intra nmfnettone*, nocons
-quietly eststo: reg R_24 nmfnettone*, nocons
+quietly eststo: reg V L(1/10).V nmfnettone*, nocons r
+quietly eststo: reg V nmfnettone*, nocons r
+quietly eststo: reg R_intra nmfnettone*, nocons r
+quietly eststo: reg R_24 nmfnettone*, nocons r
 esttab, ar2 indicate("Lagged volatility" = L*.V)
 // Uncert LDA
 eststo clear
-quietly eststo: reg V L(1/10).V ldauncert*, nocons
-quietly eststo: reg V ldauncert*, nocons
-quietly eststo: reg R_intra ldauncert*, nocons
-quietly eststo: reg R_24 ldauncert*, nocons
+quietly eststo: reg V L(1/10).V ldauncert*, nocons r
+quietly eststo: reg V ldauncert*, nocons r
+quietly eststo: reg R_intra ldauncert*, nocons r
+quietly eststo: reg R_24 ldauncert*, nocons r
 esttab, ar2 indicate("Lagged volatility" = L*.V)
 // Uncert NMF
 eststo clear
-quietly eststo: reg V L(1/10).V nmfuncert*, nocons
-quietly eststo: reg V nmfuncert*, nocons
-quietly eststo: reg R_intra nmfuncert*, nocons
-quietly eststo: reg R_24 nmfuncert*, nocons
+quietly eststo: reg V L(1/10).V nmfuncert*, nocons r
+quietly eststo: reg V nmfuncert*, nocons r
+quietly eststo: reg R_intra nmfuncert*, nocons r
+quietly eststo: reg R_24 nmfuncert*, nocons r
 esttab, ar2 indicate("Lagged volatility" = L*.V)

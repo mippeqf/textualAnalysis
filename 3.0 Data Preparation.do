@@ -21,7 +21,6 @@ drop release
 gen dl_nettone_change = dl_nettone[_n] - dl_nettone[_n-1], after(dl_nettone)
 gen dl_uncert_change = dl_uncert[_n] - dl_uncert[_n-1], after(dl_uncert)
 save "./data/tone.dta", replace
-desc
 
 // Parse financial data
 import delimited "C:\Users\Markus\Desktop\BA\textualAnalysis\statics\spyYF.csv", clear

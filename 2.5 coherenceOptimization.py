@@ -66,8 +66,10 @@ if __name__ == '__main__':
         keep_n=5000
     )
     corpus = [dct.doc2bow(paragraph) for paragraph in minutes]
+    tfidf = gensim.models.TfidfModel(corpus)
+    transtfidf = tfidf[corpus]
 
-    models, coherenceVals = compute_coherence_values(dct, corpus, minutes, 16, 1, 1)
+    models, coherenceVals = compute_coherence_values(dct, transtfidf, minutes, 16, 1, 1)
     print(coherenceVals)
 
     x_axis = [x for x in range(1, 16)]

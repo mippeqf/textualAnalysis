@@ -24,7 +24,7 @@ gen fomcdummy=cond(missing(year),0,1)
 drop if missing(vix) // business calendar doesn't include non-weekend holidays! Although regression employs casewise deletion, computing deltas will still introduce problems, thus drop missing observations beforehand
 bcal create vix_cal, from(date) replace generate(business_date)
 tsset business_date
-gen d_vix = vix[_n]-vix[_n-1]
+gen d_vix = vix[_n]-vix[_n-1], after(vix)
 
 // Set dataset up as timeseries to use lag operators in regressions
 bcal create spy_cal, from(date) replace generate(trading_days)

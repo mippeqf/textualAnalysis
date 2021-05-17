@@ -46,7 +46,7 @@ PASSES = 100  # number of iterations to train the model, 50 is default
 
 # Haven't tested multicore training yet, only works with wrapping te following in - if __name__ == "__main__":
 lda = gensim.models.LdaModel(
-    corpus=corpus,  # ??? Use tfidf weighting to start off, improves coherence value convergence
+    corpus=transtfidf,  # ??? Use tfidf weighting to start off, improves coherence value convergence
     id2word=dct,
     chunksize=2000,
     alpha='auto',
@@ -69,7 +69,7 @@ gensim.corpora.MmCorpus.serialize("models/corpus", corpus)
 
 # NMF
 nmf = gensim.models.nmf.Nmf(
-    corpus=corpus,
+    corpus=transtfidf,
     num_topics=NUM_TOPICS,
     id2word=dct,
     chunksize=2000,

@@ -153,12 +153,11 @@ for row in tqdm(minutes):
 # Append some basic word and paragraph count variables
 minutesNewnew = []
 for row in minutesNew:
-    paraCntFiltered = len(row["filteredParagraphs"])
-    paraCntRaw = len(row["rawParagraphs"])
+    paraCnt = len(row["filteredParagraphs"])
+    # paraCntRaw = len([para for para in row["rawParagraphs"] if para]) # paraCntRaw is the same as filtered because empty paragraph were kicked already
     wordCntFiltered = sum([len(para) for para in row["filteredParagraphs"]])
     wordCntRaw = sum([len(para) for para in row["rawParagraphs"]])
-    minutesNewnew.append({**row, "wordCntFiltered": wordCntFiltered, "wordCntRaw": wordCntFiltered,
-                          "paraCntFiltered": wordCntFiltered, "paraCntRaw": wordCntFiltered})
+    minutesNewnew.append({**row, "wordCntFiltered": wordCntFiltered, "wordCntRaw": wordCntRaw, "paraCnt": paraCnt})
 
 # Reduce size of dataset before exporting
 for i, mins in enumerate(minutesNewnew):

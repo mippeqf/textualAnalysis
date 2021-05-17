@@ -29,15 +29,17 @@ if not os.path.exists("img"):
 #####################################################################################
 minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "dataExport"), "rb"))
 df = pd.DataFrame(minutes)
-df = df[["release", "ldaProp1", "ldaProp2", "ldaProp3", "ldaProp4", "ldaProp5", "ldaProp6", "ldaProp7", "ldaProp8", "ldaProp9", "ldaProp10"]]
+df = df[["release", "ldaProp1", "ldaProp2", "ldaProp3", "ldaProp4", "ldaProp5", "ldaProp6", "ldaProp7", "ldaProp8"]]
 df.plot.area(stacked=True, x="release").legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
+plt.title("LDA topic proportions stacked")
 plt.savefig("img/ldaPropStacked.png")
 plt.clf()
 
 minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "dataExport"), "rb"))
 df = pd.DataFrame(minutes)
-df = df[["release", "nmfProp1", "nmfProp2", "nmfProp3", "nmfProp4", "nmfProp5", "nmfProp6", "nmfProp7", "nmfProp8", "nmfProp9", "nmfProp10"]]
+df = df[["release", "nmfProp1", "nmfProp2", "nmfProp3", "nmfProp4", "nmfProp5", "nmfProp6", "nmfProp7", "nmfProp8"]]
 df.plot.area(stacked=True, x="release").legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
+plt.title("NMF topic proportions stacked")
 plt.savefig("img/nmfPropStacked.png")
 plt.clf()
 
@@ -54,19 +56,25 @@ for topic in range(0, NUM_TOPICS):
     termslda = lda.show_topic(topic, topn=50)  # get_topic_terms would return words as dict IDs, not strings
     # Model returns list of tuples, wordcloud wants a dictionary instead
     wordcloudlda = WordCloud(background_color="white").generate_from_frequencies(dict(termslda))
+    plt.subplot(3, 3, topic+1)
     plt.imshow(wordcloudlda)
     plt.axis("off")
-    plt.savefig(f"img/lda_topic_{topic+1}.png")
-    plt.clf()
+    plt.title("Topic"+str(topic+1))
+plt.suptitle("LDA wordclouds by topic")
+plt.savefig(f"img/lda_topic.png")
+plt.clf()
 
 for topic in range(0, NUM_TOPICS):
     termsnmf = nmf.show_topic(topic, topn=50)
     # Model returns list of tuples, wordcloud wants a dictionary instead
     wordcloudnmf = WordCloud(background_color="white").generate_from_frequencies(dict(termsnmf))
+    plt.subplot(3, 3, topic+1)
     plt.imshow(wordcloudnmf)
     plt.axis("off")
-    plt.savefig(f"img/nmf_topic_{topic+1}.png")
-    plt.clf()
+    plt.title("Topic"+str(topic+1))
+plt.suptitle("NMF wordclouds by topic")
+plt.savefig(f"img/nmf_topic.png")
+plt.clf()
 
 
 #################################################################
