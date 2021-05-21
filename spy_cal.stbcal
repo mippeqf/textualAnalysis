@@ -1,38 +1,13 @@
 * Business calendar "spy_cal" created by -bcal create-
-* Created/replaced on 17 May 2021
+* Created/replaced on 20 May 2021
 
 version 16
 dateformat ymd
 
-range 1990jan02 2021may04
-centerdate 1990jan02
+range 1993jan29 2021apr27
+centerdate 1993jan29
 
 omit dayofweek (Sa Su)
-omit date 1990feb19
-omit date 1990apr13
-omit date 1990may28
-omit date 1990jul04
-omit date 1990sep03
-omit date 1990nov22
-omit date 1990dec25
-omit date 1991jan01
-omit date 1991feb18
-omit date 1991mar01
-omit date 1991mar29
-omit date 1991may27
-omit date 1991jul04
-omit date 1991sep02
-omit date 1991nov28
-omit date 1991dec25
-omit date 1992jan01
-omit date 1992feb17
-omit date 1992apr17
-omit date 1992may25
-omit date 1992jul03
-omit date 1992sep07
-omit date 1992nov26
-omit date 1992dec25
-omit date 1993jan01
 omit date 1993feb15
 omit date 1993apr09
 omit date 1993may31
@@ -65,13 +40,11 @@ omit date 1996sep02
 omit date 1996nov28
 omit date 1996dec25
 omit date 1997jan01
-omit date 1997jan31
 omit date 1997feb17
 omit date 1997mar28
 omit date 1997may26
 omit date 1997jul04
 omit date 1997sep01
-omit date 1997nov26
 omit date 1997nov27
 omit date 1997dec25
 omit date 1998jan01
@@ -291,4 +264,3 @@ omit date 2021jan01
 omit date 2021jan18
 omit date 2021feb15
 omit date 2021apr02
-omit date 2021apr16

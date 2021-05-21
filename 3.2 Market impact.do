@@ -5,7 +5,7 @@ set scheme s2color
 eststo clear
 set graphics off
 
-use ".\data\3 dataPrepared.dta", clear
+use ".\data\marketImpact.dta", clear
 
 tsset trading_days
 sort trading_days

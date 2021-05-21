@@ -8,7 +8,7 @@ set graphics off
 // Python can be called from within stata, perhaps do a master stata file
 
 //--------------------------------------------------
-// Preload data and prepare for merging
+// Prepare market impact data
 //--------------------------------------------------
 
 // Parse minutes
@@ -31,9 +31,9 @@ drop date dividends stocksplits
 rename date1 date
 save "./statics/spyYF.dta", replace
 
-//--------------------------------------------------
-// Merge
-//--------------------------------------------------
+
+// -------------- Merge
+
 merge 1:m date using "C:\Users\Markus\Desktop\BA\textualAnalysis\data\tone.dta", // 1:m only because for one date, three different links exist
 // Delete two of three observations referring to the same document
 drop if strpos(link, "#") // Specific to this dataset!
@@ -41,9 +41,9 @@ drop if strpos(link, "#") // Specific to this dataset!
 sort date // Just in case
 
 
-//--------------------------------------------------
-// Create derivative variables
-//--------------------------------------------------
+
+// ------------- Create derivative variables
+
 gen fomcdummy=cond(missing(year),0,1)
 gen R_24 = (close-close[_n-1])/close[_n-1], after(close)
 label var R_24 "Close-close diff"
@@ -54,9 +54,8 @@ sum(vola_temp)
 gen V = (high-low)/r(sd), after(vola_temp)
 // by link: gen dl_nettone_change = dl_nettone[_n]-dl_nettone[_n-1] if _merge==3, after(dl_nettone)
 
-//--------------------------------------------------
-// Set as TS, prepare for macro merge and save
-//--------------------------------------------------
+// ------------- Timeseries setup
+
 // Set dataset up as timeseries to use lag operators in regressions
 bcal create spy_cal, from(date) replace generate(trading_days)
 // bcal create fomc_cal, from(date) replace generate(fomc_date)
@@ -67,11 +66,7 @@ tsset trading_days
 // Unique identifier for month (xth month since 1960m1)
 gen month = mofd(date), after(date)
 
-save ".\3 dataPrepared.dta", replace
-
-//--------------------------------------------------
-// Prepare&merge macro data
-//--------------------------------------------------
+// ---------- Prepare&merge macro data
 
 import delimited "C:\Users\Markus\Desktop\BA\textualAnalysis\statics\BOPGSTB.csv", clear
 tostring date, replace
@@ -108,7 +103,7 @@ rename usrec recession
 drop date
 save ".\statics\recession.dta", replace
 
-use ".\3 dataPrepared.dta", clear
+use ".\data\marketImpact.dta", clear
 merge m:1 month using ".\statics\tb.dta", nogen
 merge m:1 month using ".\statics\cpi.dta", nogen
 merge m:1 month using ".\statics\interest.dta", nogen
@@ -120,4 +115,4 @@ drop if missing(date) // Only missing for exceeding control variables
 // Package controls into one variable, doesn't work properly yet
 local controls "tradebalance cpi interest unemployment recession"
 
-save ".\data\3 dataPrepared.dta", replace
+save ".\data\marketImpact.dta", replace
