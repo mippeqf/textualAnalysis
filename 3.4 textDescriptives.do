@@ -5,7 +5,7 @@ set scheme s1mono
 eststo clear
 set graphics off
 
-use ".\data\marketImpact.dta", clear
+use ".\data\main.dta", clear
 
 //--------------------------------------------------
 // Descriptive charts
@@ -15,9 +15,11 @@ use ".\data\marketImpact.dta", clear
 sort date
 tsset date // Set timeseries to 'natural dates' to get even spacing. As soon as we're not looking solely at financial data, natural dates are the proper series. When generating lags for financial ts, remember to temporarily switch back to the bcal!
 
-tsline paracnt, yaxis(1) lcolor(maroon) ytitle("") || tsline wordcntfiltered, yaxis(2) lcolor(navy) plotregion(style(none)) xtitle("") ytitle("", axis(1)) legend(order(2 "Words (right)" 1 "Paragraphs (left)")) 
+label var wordcntfiltered "Word count"
+label var paracnt "Paragraph count"
+tsline paracnt, yaxis(1) lcolor(maroon) || tsline wordcntfiltered, yaxis(2) lcolor(navy) plotregion(style(none)) legend(order(2 "Words (filtered)" 1 "Paragraphs")) 
 graph export ".\img\desc\totalNumberWords.png", as(png) replace
-
+exit
 // tsline paracnt, lcolor(navy maroon) plotregion(style(none)) ytitle("Total paragraph count") xtitle("")
 // graph export ".\img\totalNumberParagraphs.png", as(png) replace
 //
