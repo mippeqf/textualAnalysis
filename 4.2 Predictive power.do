@@ -3,7 +3,7 @@ clear
 set scheme s2color
 set scheme s1mono
 eststo clear
-set graphics off
+set graphics on
 
 use "data\main.dta", clear
 
@@ -35,7 +35,45 @@ foreach list in dl* lda* nmf*{
 // Kick lda
 drop lda*
 
-// exit
+
+// Attempt to purge DL nettone loading from individual topic tone combinations
+// Although values differ slightly, shape of impact(residuals), regressand(close) 
+// is precisely the same for all topics. WHY? Residuals 
+if 0{
+	foreach tone of varlist nmfnettone*{
+		reg `tone' dl_nettone, r // Doesnae matter whether to use reg or newey
+			// Only predictions are used, not SEs/CIs and that's the only point of difference (obvs)
+		predict double resid`tone', residuals
+		label var resid`tone' "`tone' Residuals"
+		replace resid`tone' = 0 if missing(link)
+		// 	impact(resid`tone'), regressand(close)
+		// 	drop resid`tone'
+	}
+	impact(residnmfnettone*), regressand(close)
+	exit
+
+	// Plot residuals - graphically independent!
+	graph drop _all
+	foreach var of varlist residnmfnettone*{
+		replace `var' = . if missing(link)
+		tsline `var', name(`var') yline(0) 
+		local graphs "`graphs' `var'"
+	}
+	graph combine `graphs', title("Topic on NaiveTone Residuals") iscale(0.5)
+	graph export ".\img\topicToneResiduals.png", replace
+	
+	// Test relationship of topic-tone residuals among one another and to dl_nettone
+	// Result: not related to dl_nettone but related among each other
+	eststo clear
+	forvalues i = 1/7{
+		local next = `i'+1
+		quietly eststo: reg residnmfnettone`i' residnmfnettone`next'
+		quietly eststo: reg residnmfnettone`i' dl_nettone
+	}
+	esttab, r2 nocons
+}
+
+exit
 
 // ---------------------------------
 // Impact analyses

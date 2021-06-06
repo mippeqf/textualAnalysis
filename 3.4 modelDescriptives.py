@@ -8,9 +8,11 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import gensim.corpora
 import gensim.utils
-from envVars import NUM_TOPICS
+# from envVars import NUM_TOPICS
 import pickle
 import pandas as pd
+
+NUM_TOPICS = 4
 
 #  TODO
 # - Proportion evolution (see Medium article)
@@ -27,19 +29,21 @@ if not os.path.exists("img"):
 #####################################################################################
 # Fig 1 JeWu - intertemporal progression of topic mixture
 #####################################################################################
-minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "dataExport"), "rb"))
-df = pd.DataFrame(minutes)
-df = df[["release", "ldaProp1", "ldaProp2", "ldaProp3", "ldaProp4", "ldaProp5", "ldaProp6", "ldaProp7", "ldaProp8"]]
-df.plot.area(stacked=True, x="release").legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
-plt.title("LDA topic proportions stacked")
-plt.savefig("img/ldaPropStacked.png")
-plt.clf()
+if False:
+    minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "dataExport"), "rb"))
+    df = pd.DataFrame(minutes)
+    df = df[["release", "ldaProp1", "ldaProp2", "ldaProp3", "ldaProp4", "ldaProp5", "ldaProp6", "ldaProp7", "ldaProp8"]]
+    df.plot.area(stacked=True, x="release").legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
+    plt.title("LDA topic proportions stacked")
+    plt.savefig("img/ldaPropStacked.png")
+    plt.clf()
 
 minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "dataExport"), "rb"))
 df = pd.DataFrame(minutes)
-df = df[["release", "nmfProp1", "nmfProp2", "nmfProp3", "nmfProp4", "nmfProp5", "nmfProp6", "nmfProp7", "nmfProp8"]]
+df = df[["release", *["nmfProp"+str(i) for i in range(1, NUM_TOPICS+1)]]]
 df.plot.area(stacked=True, x="release").legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
 plt.title("NMF topic proportions stacked")
+plt.tight_layout()
 plt.savefig("img/nmfPropStacked.png")
 plt.clf()
 
@@ -52,17 +56,18 @@ dct = gensim.utils.SaveLoad.load("models/dct")
 corpus = gensim.corpora.MmCorpus("models/corpus")
 nmf = Nmf.load("models/nmf")
 
-for topic in range(0, NUM_TOPICS):
-    termslda = lda.show_topic(topic, topn=50)  # get_topic_terms would return words as dict IDs, not strings
-    # Model returns list of tuples, wordcloud wants a dictionary instead
-    wordcloudlda = WordCloud(background_color="white").generate_from_frequencies(dict(termslda))
-    plt.subplot(3, 3, topic+1)
-    plt.imshow(wordcloudlda)
-    plt.axis("off")
-    plt.title("Topic"+str(topic+1))
-plt.suptitle("LDA wordclouds by topic")
-plt.savefig(f"img/lda_topic.png")
-plt.clf()
+if False:
+    for topic in range(0, NUM_TOPICS):
+        termslda = lda.show_topic(topic, topn=50)  # get_topic_terms would return words as dict IDs, not strings
+        # Model returns list of tuples, wordcloud wants a dictionary instead
+        wordcloudlda = WordCloud(background_color="white").generate_from_frequencies(dict(termslda))
+        plt.subplot(3, 3, topic+1)
+        plt.imshow(wordcloudlda)
+        plt.axis("off")
+        plt.title("Topic"+str(topic+1))
+    plt.suptitle("LDA wordclouds by topic")
+    plt.savefig(f"img/lda_topic.png")
+    plt.clf()
 
 for topic in range(0, NUM_TOPICS):
     termsnmf = nmf.show_topic(topic, topn=50)
@@ -76,7 +81,7 @@ plt.suptitle("NMF wordclouds by topic")
 plt.savefig(f"img/nmf_topic.png")
 plt.clf()
 
-
+exit()
 #################################################################
 # LDAvis
 #################################################################

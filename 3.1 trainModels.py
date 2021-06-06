@@ -6,7 +6,8 @@ import gensim.corpora
 import pickle
 import logging
 import os.path
-from envVars import NUM_TOPICS
+# from envVars import NUM_TOPICS
+NUM_TOPICS = 4
 
 # Set up logging
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
@@ -56,10 +57,10 @@ lda = gensim.models.LdaModel(
     passes=PASSES,
     eval_every=None)
 
+# print("---------------------------")
+# lda.print_topics(10, 10)
 print("---------------------------")
-lda.print_topics(10, 10)
-print("---------------------------")
-lda.save("models/lda")
+# lda.save("models/lda")
 dct.save("models/dct")
 gensim.corpora.MmCorpus.serialize("models/corpus", corpus)
 
@@ -69,11 +70,11 @@ gensim.corpora.MmCorpus.serialize("models/corpus", corpus)
 
 # NMF
 nmf = gensim.models.nmf.Nmf(
-    corpus=transtfidf,
+    corpus=corpus,
     num_topics=NUM_TOPICS,
     id2word=dct,
     chunksize=2000,
-    passes=5,
+    passes=100,
     kappa=.1,
     minimum_probability=0.01,
     w_max_iter=300,

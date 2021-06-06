@@ -1,18 +1,11 @@
 capture program drop impact
 
-// INPUTS
-// 1: dependent variable (vix)
-// 2: varlist (eg ldanettone*)
-// 3: min 
-// 4: max
-// 5: step
-
 program define impact
-	syntax varlist, regressand(varlist min=1 max=1) [max(integer 500) step(integer 30) lag]
+	syntax varlist, regressand(varlist min=1 max=1) [controls(varlist min=1) max(integer 500) step(integer 30) lag]
 	// To implement min&max limit on varlist = 1 if lag option is specified!
 // 	macro drop _all // Not a good idea, drops the input variables
 	set graphics off
-	graph drop _all
+	graph drop _all // Can't do without!
 	matrix drop _all
 	noisily di as text "Inputs: `1' `2' `3' `4' `5'"
 	noisily di as text "Inputs: `varlist' `regressand' `max' `step' `lag'"
@@ -34,7 +27,7 @@ program define impact
 		matrix colnames A = `cnames'
 		forvalues i = `min'(`step')`max' {
 			if "`lag'" == ""{
-				quietly newey S`i'.F`i'.`regressand' `varlist', lag(`maxlag')
+				quietly newey S`i'.F`i'.`regressand' `varlist' `controls', lag(`maxlag')
 				// Fi : lead the dependent variable by i periods
 				// Si : Difference between var in t and t-i
 				// Both combined give the the difference between t and t+i
@@ -76,10 +69,10 @@ program define impact
 // 	di r(varlist)
 	di wordcount(r(varlist))
 	if wordcount(r(varlist)) > 2{
-		graph combine `graphs', title("Impact on `regressand'") iscale(0.25)
+		graph combine `graphs', title("Predicting `regressand'") subtitle("Controls: `controls'") iscale(0.25)
 	}
 	else{
-		graph combine `graphs', title("Impact on `regressand'") iscale(0.75)
+		graph combine `graphs', title("Predicting `regressand'") subtitle("Controls: `controls'") iscale(0.75)
 	}
 end
 

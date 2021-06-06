@@ -21,7 +21,8 @@ import pandas as pd
 import gensim.utils
 import os.path
 from tqdm import tqdm
-from envVars import NUM_TOPICS
+# from envVars import NUM_TOPICS
+NUM_TOPICS = 4
 
 minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "2DLparagraphs"), "rb"))
 # Minutes are a list of dictionaries with fields year, meeting, link, and list of lists containing preprocessed paragraphs
