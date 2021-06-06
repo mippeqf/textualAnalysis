@@ -34,7 +34,7 @@ foreach list in dl* lda* nmf*{
 
 // Kick lda
 drop lda*
-
+	
 
 // Attempt to purge DL nettone loading from individual topic tone combinations
 // Although values differ slightly, shape of impact(residuals), regressand(close) 

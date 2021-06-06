@@ -44,12 +44,14 @@ for row in tqdm(minutes):
 
     netToneScoreAggNmf = {i: 0 for i in range(0, NUM_TOPICS)}
     uncertScoreAggNmf = {i: 0 for i in range(0, NUM_TOPICS)}
+    negScoreAggNmf = {i: 0 for i in range(0, NUM_TOPICS)}
     topTopicPropNmfAgg = {i: 0 for i in range(0, NUM_TOPICS)}
     topTopicSentNmfAgg = {i: 0 for i in range(0, NUM_TOPICS)}
     nmfTopicPropAgg = {i: 0 for i in range(0, NUM_TOPICS)}
     docLength = sum([len(para) for para in row["filteredParagraphs"]])  # total length of entire document
     docLevelNetToneScore = 0
     docLevelUncertScore = 0
+    docLevelNegScore = 0
     poscounter = 0
     negcounter = 0
     uncertcounter = 0
@@ -86,6 +88,7 @@ for row in tqdm(minutes):
         for index, weight in nmftopics:  # Iterate through Nmf topics
             netToneScoreAggNmf[index] += (posScore-negScore)*weight*paraProp
             uncertScoreAggNmf[index] += uncertScore*weight*paraProp
+            negScoreAggNmf[index] += negScore*weight*paraProp
 
         # Regular topic proportions
         for index, weight in nmf.get_document_topics(dct.doc2bow(paragraph)):
@@ -102,6 +105,7 @@ for row in tqdm(minutes):
         # Document-level metrics
         docLevelNetToneScore += (posScore-negScore)*paraProp
         docLevelUncertScore += uncertScore*paraProp
+        docLevelNegScore += negScore
         poscounter += posScore
         negcounter += negScore
         uncertcounter += uncertScore
@@ -117,14 +121,15 @@ for row in tqdm(minutes):
 
     netToneNmf = {"nmfNetTone"+str(key+1): value for key, value in netToneScoreAggNmf.items()}
     uncertNmf = {"nmfUncert"+str(key+1): value for key, value in uncertScoreAggNmf.items()}
+    negNmf = {"nmfneg"+str(key+1): value for key, value in negScoreAggNmf.items()}
     propNmf = {"nmfProp"+str(key+1): value for key, value in nmfTopicPropAgg.items()}
     # topTopicPropLda = {"topTopicPropLda"+str(key+1): value for key, value in topTopicPropLdaAgg.items()}
     # topTopicPropNmf = {"topTopicPropNmf"+str(key+1): value for key, value in topTopicPropNmfAgg.items()}
     # topTopicSentLda = {"topTopicSentLda"+str(key+1): value for key, value in topTopicSentLdaAgg.items()}
     # topTopicSentNmf = {"topTopicSentNmf"+str(key+1): value for key, value in topTopicSentNmfAgg.items()}
-    minutesNew.append({**row, **netToneNmf, **uncertNmf,  **propNmf,
+    minutesNew.append({**row, **netToneNmf, **uncertNmf,  **negNmf, **propNmf,
                        #    **topTopicPropLda, **topTopicPropNmf, **topTopicSentLda, **topTopicSentNmf,
-                       "DL_nettone": docLevelNetToneScore, "DL_uncert": docLevelUncertScore,
+                       "DL_nettone": docLevelNetToneScore, "DL_uncert": docLevelUncertScore, "DL_neg": docLevelNegScore,
                        "poscnt": poscounter, "negcnt": negcounter, "uncertcnt": uncertcounter})
 
 # Append some basic word and paragraph count variables
