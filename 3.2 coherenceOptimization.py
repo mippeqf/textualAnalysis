@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import gensim.corpora
 import gensim.utils
-# from .envVars import NUM_TOPICS
+from envVars import NUM_TOPICS
 import pickle
 import os.path
 import logging

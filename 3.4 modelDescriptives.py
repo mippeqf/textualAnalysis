@@ -8,11 +8,9 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import gensim.corpora
 import gensim.utils
-# from envVars import NUM_TOPICS
+from envVars import NUM_TOPICS
 import pickle
 import pandas as pd
-
-NUM_TOPICS = 4
 
 #  TODO
 # - Proportion evolution (see Medium article)

@@ -1,1 +1,0 @@
-NUM_TOPICS = 8

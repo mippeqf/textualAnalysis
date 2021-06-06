@@ -6,8 +6,7 @@ import gensim.corpora
 import pickle
 import logging
 import os.path
-# from envVars import NUM_TOPICS
-NUM_TOPICS = 4
+from envVars import NUM_TOPICS
 
 # Set up logging
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
@@ -46,16 +45,16 @@ transtfidf = tfidf[corpus]
 PASSES = 100  # number of iterations to train the model, 50 is default
 
 # Haven't tested multicore training yet, only works with wrapping te following in - if __name__ == "__main__":
-lda = gensim.models.LdaModel(
-    corpus=transtfidf,  # ??? Use tfidf weighting to start off, improves coherence value convergence
-    id2word=dct,
-    chunksize=2000,
-    alpha='auto',
-    eta='auto',
-    iterations=400,
-    num_topics=NUM_TOPICS,
-    passes=PASSES,
-    eval_every=None)
+# lda = gensim.models.LdaModel(
+#     corpus=transtfidf,  # ??? Use tfidf weighting to start off, improves coherence value convergence
+#     id2word=dct,
+#     chunksize=2000,
+#     alpha='auto',
+#     eta='auto',
+#     iterations=400,
+#     num_topics=NUM_TOPICS,
+#     passes=PASSES,
+#     eval_every=None)
 
 # print("---------------------------")
 # lda.print_topics(10, 10)
