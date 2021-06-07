@@ -11,7 +11,7 @@ use "data\main.dta", clear
 // Timeseries setup
 // ---------------------------------
 
-drop if missing(vix) | missing(close) | missing(yield)
+drop if missing(vix) | missing(spy) | missing(yield) | missing(bond)
 // business calendar doesn't include non-weekend holidays! Although regression employs casewise deletion, computing deltas will still introduce problems, thus drop missing observations beforehand
 
 // Newey doesn't accept business calendars even though they've been around for several years now. Because dates need to be spaced perfectly evenly without missing values in the regressand and regressors, I generate a new date variable and replace missing regression variables by their lcoeffsed versions.
@@ -20,24 +20,24 @@ tsset pseudodate
 tsfill
 
 // dependent vars to previous if missing -- not necessary, dropped missing ones already
-// replace close = close[_n-1] if missing(close)
+// replace spy = spy[_n-1] if missing(spy)
 // replace vix = vix[_n-1] if missing(vix)
 // replace yield = yield[_n-1] if missing(yield)
 replace fomcdummy = 0 if missing(fomcdummy)
 
 // impact vars to 0 if missing
-foreach list in dl* lda* nmf*{
+foreach list in dl* nmf*{
 	foreach a of varlist `list'{
 		replace `a' = 0 if missing(`a')
 	}
 }
 
 // Kick lda
-drop lda*
+// drop lda*
 	
 
 // Attempt to purge DL nettone loading from individual topic tone combinations
-// Although values differ slightly, shape of impact(residuals), regressand(close) 
+// Although values differ slightly, shape of impact(residuals), regressand(spy) 
 // is precisely the same for all topics. WHY? Residuals 
 if 0{
 	foreach tone of varlist nmfnettone*{
@@ -46,10 +46,10 @@ if 0{
 		predict double resid`tone', residuals
 		label var resid`tone' "`tone' Residuals"
 		replace resid`tone' = 0 if missing(link)
-		// 	impact(resid`tone'), regressand(close)
+		// 	impact(resid`tone'), regressand(spy)
 		// 	drop resid`tone'
 	}
-	impact(residnmfnettone*), regressand(close)
+	impact(residnmfnettone*), regressand(spy)
 	exit
 
 	// Plot residuals - graphically independent!
@@ -83,36 +83,55 @@ exit
 impact V, regressand(V) max(200) step(10) lag
 graph export ".\img\pred\PreReleaseVolatilityDrift.png", replace
 
-// Document-level regressions
-impact dl_nettone, regressand(close)
-graph export ".\img\pred\DLnettoneONspy.png", replace
-impact dl_uncert, regressand(close)
-graph export ".\img\pred\DLuncertONspy.png", replace
-impact dl_nettone, regressand(vix)
-graph export ".\img\pred\DLnettoneONvix.png", replace
-impact dl_uncert, regressand(vix)
-graph export ".\img\pred\DLuncertONvix.png", replace
+// Naive tone predictions 
+	// DO NOT COMBINE WITH ROUTINE BELOW!! Otherwise you'd control for every other naive tone in the 
+	// prediction regressions, but I want them standalone!
+local depset = "spy bond vix" // dep for dependent variable
+local controls = ""
+foreach dep in `depset'{
+	local deplabel: var label `dep'
+	local graphs = ""
+	graph drop _all
+	foreach var of varlist dl_*{
+		quietly impact `var', regressand(`dep') controls(`controls') keepgraph
+		local graphs "`graphs' `var'"
+	}
+	graph combine `graphs', iscale(0.5) title("Predicting `deplabel' with naive tone") subtitle("Controls: `controls'")
+	graph export "./img/pred/naiveON`dep'.png", replace
+}
 
-// Topic-level regressions
-impact nmfnettone*, regressand(close)
-graph export ".\img\pred\nmfnettoneONspy.png", replace
-impact nmfuncert*, regressand(close)
-graph export ".\img\pred\nmfuncertONspy.png", replace
-impact nmfnettone*, regressand(vix)
-graph export ".\img\pred\nmfnettoneONvix.png", replace
-impact nmfuncert*, regressand(vix)
-graph export ".\img\pred\nmfuncertONvix.png", replace
-// impact vix ldanettone* 500 30
-// graph export ".\img\pred\ldanettoneONvix.png", replace
-// impact vix ldauncert* 500 30
-// graph export ".\img\pred\ldanetuncertONvix.png", replace
 
+local depset = "spy bond vix" // dep for dependent variable
+local controls = ""
+local topicset = "nmfnettone nmfuncert nmfneg nmfpos"
+foreach dep in `depset'{
+	local deplabel: var label `dep'
+	foreach topic in `topicset'{
+		local graphs = ""
+		graph drop _all
+		foreach var of varlist `topic'*{
+			quietly impact `var', regressand(`dep') controls(`controls') keepgraph notopiccontrol
+			local graphs "`graphs' `var'"
+		}
+		graph combine `graphs', iscale(0.5) title("Predicting `deplabel' with `topic'") subtitle("Controls: `controls'")
+		graph export "./img/pred/`topic'ON`dep'.png", replace
+	}
+}
 
 exit
 
 
 
 
+// Lda stuff
+// impact vix ldanettone* 500 30
+// graph export ".\img\pred\ldanettoneONvix.png", replace
+// impact vix ldauncert* 500 30
+// graph export ".\img\pred\ldanetuncertONvix.png", replace
+
+
+
+// Time variable handling: OLD APPROACH
 
 // gen d_vix = vix[_n]-vix[_n-1], after(vix)
 // replace d_vix = 0 if missing(d_vix)

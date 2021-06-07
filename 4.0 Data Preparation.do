@@ -43,7 +43,8 @@ gen V = (high-low)/r(mean), after(vola_temp)
 drop vola_temp
 label var V "Intraday volatility"
 // by link: gen dl_nettone_change = dl_nettone[_n]-dl_nettone[_n-1] if _merge==3, after(dl_nettone)
-
+rename close spy
+label var spy "S&P500"
 save "./statics/spy.dta", replace
 
 
@@ -55,6 +56,7 @@ format %tdDD/NN/CCYY date1
 drop date
 rename date1 date
 rename vixcls vix
+label var vix "VIX"
 save ".\statics\vix.dta", replace
 
 // Parse treasuryyield
@@ -65,8 +67,18 @@ format %tdDD/NN/CCYY date1
 drop date
 rename date1 date
 rename dgs10 yield
+label var yield "Treasury yield"
 save ".\statics\yield.dta", replace
 
+// Parse bofa bond index
+import delimited "C:\Users\Markus\Desktop\BA\textualAnalysis\statics\BOND.csv", clear
+tostring date, replace
+generate date1 = date(date,"YMD"), after(date)
+format %tdDD/NN/CCYY date1
+drop date
+rename date1 date
+label var bond "BofA Bond Index"
+save ".\statics\bond.dta", replace
 
 // -------------- Merge
 use "./data/tone.dta", clear
@@ -75,8 +87,14 @@ sort date
 merge 1:1 date using ".\statics\spy.dta", nogen
 merge 1:1 date using ".\statics\vix.dta", nogen
 merge 1:1 date using ".\statics\yield.dta", nogen
+merge 1:1 date using ".\statics\bond.dta", nogen
 
 gen fomcdummy=cond(missing(year),0,1)
+label var dl_nettone "naiveNettone"
+label var dl_uncert "naiveUncert"
+label var dl_pos "naivePos"
+label var dl_neg "naiveNeg"
+
 
 sort date
 
@@ -120,10 +138,15 @@ sort date // Merging messes up the ordering somehow
 drop if missing(date) // Only missing for exceeding control variables
 
 rename bopgstb tradebalance
+label var tradebalance "Tradebalance"
 rename cpiaucsl cpiaucsl
+label var cpiaucsl "Consumer Price Index"
 rename fedfunds interest
+label var interest "Federal Funds Rate"
 rename unrate unemployment
+label var unemployment "Unemployment Rate"
 rename usrec recession
+label var recession "Recession"
 
 drop if date < date("29/01/1993", "DMY") // Vix goes back to 1990
 

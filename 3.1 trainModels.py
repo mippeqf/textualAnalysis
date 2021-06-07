@@ -69,7 +69,7 @@ gensim.corpora.MmCorpus.serialize("models/corpus", corpus)
 
 # NMF
 nmf = gensim.models.nmf.Nmf(
-    corpus=corpus,
+    corpus=transtfidf,
     num_topics=NUM_TOPICS,
     id2word=dct,
     chunksize=2000,

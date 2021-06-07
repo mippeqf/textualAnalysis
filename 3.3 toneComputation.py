@@ -45,6 +45,7 @@ for row in tqdm(minutes):
     netToneScoreAggNmf = {i: 0 for i in range(0, NUM_TOPICS)}
     uncertScoreAggNmf = {i: 0 for i in range(0, NUM_TOPICS)}
     negScoreAggNmf = {i: 0 for i in range(0, NUM_TOPICS)}
+    posScoreAggNmf = {i: 0 for i in range(0, NUM_TOPICS)}
     topTopicPropNmfAgg = {i: 0 for i in range(0, NUM_TOPICS)}
     topTopicSentNmfAgg = {i: 0 for i in range(0, NUM_TOPICS)}
     nmfTopicPropAgg = {i: 0 for i in range(0, NUM_TOPICS)}
@@ -52,6 +53,7 @@ for row in tqdm(minutes):
     docLevelNetToneScore = 0
     docLevelUncertScore = 0
     docLevelNegScore = 0
+    docLevelPosScore = 0
     poscounter = 0
     negcounter = 0
     uncertcounter = 0
@@ -89,6 +91,7 @@ for row in tqdm(minutes):
             netToneScoreAggNmf[index] += (posScore-negScore)*weight*paraProp
             uncertScoreAggNmf[index] += uncertScore*weight*paraProp
             negScoreAggNmf[index] += negScore*weight*paraProp
+            posScoreAggNmf[index] += posScore*weight*paraProp
 
         # Regular topic proportions
         for index, weight in nmf.get_document_topics(dct.doc2bow(paragraph)):
@@ -105,9 +108,11 @@ for row in tqdm(minutes):
         # Document-level metrics
         docLevelNetToneScore += (posScore-negScore)*paraProp
         docLevelUncertScore += uncertScore*paraProp
-        docLevelNegScore += negScore
+        docLevelNegScore += negScore*paraProp
+        docLevelPosScore += posScore*paraProp
         poscounter += posScore
         negcounter += negScore
+        poscounter += posScore
         uncertcounter += uncertScore
 
     # COMPUTE FINAL DOCUMENT-LEVEL METRICS
@@ -121,15 +126,16 @@ for row in tqdm(minutes):
 
     netToneNmf = {"nmfNetTone"+str(key+1): value for key, value in netToneScoreAggNmf.items()}
     uncertNmf = {"nmfUncert"+str(key+1): value for key, value in uncertScoreAggNmf.items()}
-    negNmf = {"nmfneg"+str(key+1): value for key, value in negScoreAggNmf.items()}
+    negNmf = {"nmfNeg"+str(key+1): value for key, value in negScoreAggNmf.items()}
+    posNmf = {"nmfPos"+str(key+1): value for key, value in posScoreAggNmf.items()}
     propNmf = {"nmfProp"+str(key+1): value for key, value in nmfTopicPropAgg.items()}
     # topTopicPropLda = {"topTopicPropLda"+str(key+1): value for key, value in topTopicPropLdaAgg.items()}
     # topTopicPropNmf = {"topTopicPropNmf"+str(key+1): value for key, value in topTopicPropNmfAgg.items()}
     # topTopicSentLda = {"topTopicSentLda"+str(key+1): value for key, value in topTopicSentLdaAgg.items()}
     # topTopicSentNmf = {"topTopicSentNmf"+str(key+1): value for key, value in topTopicSentNmfAgg.items()}
-    minutesNew.append({**row, **netToneNmf, **uncertNmf,  **negNmf, **propNmf,
+    minutesNew.append({**row, **netToneNmf, **uncertNmf,  **negNmf, **posNmf, ** propNmf,
                        #    **topTopicPropLda, **topTopicPropNmf, **topTopicSentLda, **topTopicSentNmf,
-                       "DL_nettone": docLevelNetToneScore, "DL_uncert": docLevelUncertScore, "DL_neg": docLevelNegScore,
+                       "DL_nettone": docLevelNetToneScore, "DL_uncert": docLevelUncertScore, "DL_neg": docLevelNegScore, "DL_pos": docLevelPosScore,
                        "poscnt": poscounter, "negcnt": negcounter, "uncertcnt": uncertcounter})
 
 # Append some basic word and paragraph count variables

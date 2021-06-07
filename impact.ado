@@ -1,11 +1,13 @@
 capture program drop impact
 
 program define impact
-	syntax varlist, regressand(varlist min=1 max=1) [controls(varlist min=1) max(integer 500) step(integer 30) lag]
+	syntax varlist, regressand(varlist min=1 max=1) [controls(varlist min=1) max(integer 500) step(integer 30) lag keepgraph notopiccontrol]
 	// To implement min&max limit on varlist = 1 if lag option is specified!
 // 	macro drop _all // Not a good idea, drops the input variables
 	set graphics off
-	graph drop _all // Can't do without!
+	if "`keepgraph'" == ""{
+		graph drop _all // Specify "keepgraph" if you want to combine graphs manually outside of impact.ado
+	}
 	matrix drop _all
 	noisily di as text "Inputs: `1' `2' `3' `4' `5'"
 	noisily di as text "Inputs: `varlist' `regressand' `max' `step' `lag'"
@@ -19,6 +21,8 @@ program define impact
 	local maxlag = ceil(sqrt(sqrt(_N))) 
 	// Max lag as the fourth root of T, see Greene (Econometric Analysis, 7th edition, section 20.5.2, p. 960).
 	foreach topic of varlist `varlist' {
+		local topiclabel: var label `topic'
+		local regressandlabel: var label `regressand'
 		di as result "`topic'"
 		local sorlabel: variable label `topic'
 		matrix dir
@@ -27,13 +31,18 @@ program define impact
 		matrix colnames A = `cnames'
 		forvalues i = `min'(`step')`max' {
 			if "`lag'" == ""{
-				quietly newey S`i'.F`i'.`regressand' `varlist' `controls', lag(`maxlag')
-				// Fi : lead the dependent variable by i periods
-				// Si : Difference between var in t and t-i
-				// Both combined give the the difference between t and t+i
-				// Not sure whether double TS operators work correctly, let's hope they do
-				// Always start with 1 as min, with 0 you're using the scalar 0 as a regressor I believe
-				di as text "Iteration " (`i'-1)/`step'+1 ": Computing `topic' impact onto `regressand' differential on day " `i' " after event"
+				if "`notopiccontrol'" == ""{
+					quietly newey S`i'.F`i'.`regressand' `varlist' `controls', lag(`maxlag')
+					// Fi : lead the dependent variable by i periods
+					// Si : Difference between var in t and t-i
+					// Both combined give the the difference between t and t+i
+					// Not sure whether double TS operators work correctly, let's hope they do
+					// Always start with 1 as min, with 0 you're using the scalar 0 as a regressor I believe
+				}
+				else{
+					quietly newey S`i'.F`i'.`regressand' `controls', lag(`maxlag')
+				}
+				di as text "Iteration " (`i'-1)/`step'+1 ": Computing `topiclabel' impact onto `regressandlabel' differential on day " `i' " after event"
 // 				di as text "S`i'.F`i'.`regressand' `varlist'"
 // 				matlist r(table)
 				matrix A[1,colnumb(A,"`i'")] = r(table)["b","`topic'"]
@@ -44,7 +53,7 @@ program define impact
 			} 
 			else { 
 				quietly newey `regressand' L`i'.`varlist', lag(`maxlag')
-				di as text "Iteration " (`i'-1)/`step'+1 ": Computing `topic' impact onto `regressand' level on day " `i' " before event"
+				di as text "Iteration " (`i'-1)/`step'+1 ": Computing `topiclabel' impact onto `regressandlabel' level on day " `i' " before event"
 // 				di as text "`regressand' L`i'.`varlist'"
 // 				matlist r(table)
 				matrix A[1,colnumb(A,"`i'")] = r(table)["b",1]
@@ -69,10 +78,10 @@ program define impact
 // 	di r(varlist)
 	di wordcount(r(varlist))
 	if wordcount(r(varlist)) > 2{
-		graph combine `graphs', title("Predicting `regressand'") subtitle("Controls: `controls'") iscale(0.25)
+		graph combine `graphs', title("Predicting `regressandlabel'") subtitle("Controls: `controls'") iscale(0.25)
 	}
 	else{
-		graph combine `graphs', title("Predicting `regressand'") subtitle("Controls: `controls'") iscale(0.75)
+		graph combine `graphs', title("Predicting `regressandlabel'") subtitle("Controls: `controls'") iscale(0.75)
 	}
 end
 

@@ -1,7 +1,6 @@
 from gensim.models import LdaModel, CoherenceModel
 from gensim.models.nmf import Nmf
 import matplotlib.pyplot as plt
-from wordcloud import WordCloud
 import gensim.corpora
 import gensim.utils
 from envVars import NUM_TOPICS
@@ -11,14 +10,14 @@ import logging
 from tqdm import tqdm
 from pprint import pprint
 from functools import reduce
-from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
-import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
+from gensim.models.coherencemodel import CoherenceModel
 
-# logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
-if False:
+# Compute coherence scores, skipped this section for debugging the plotting section
+# Alt method with CoherenceModel is based on https://towardsdatascience.com/topic-modeling-articles-with-nmf-8c6b2a227a45
+if True and __name__ == '__main__':
     minspickeled = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "2DLparagraphs"), "rb"))
     minutes = [para for doc in minspickeled for para in doc["filteredParagraphs"]]
     dct = gensim.corpora.Dictionary(minutes)
@@ -33,13 +32,15 @@ if False:
 
     avgScoreArr = []
     topicScoreArr = []
-    for num_topics in tqdm(range(1, 20, 1)):
+    coherenceScoreAlt = []
+    for num_topics in tqdm(range(1, 21, 1)):
+        print("Starting to train nmf model")
         model = gensim.models.nmf.Nmf(
             corpus=transtfidf,
             num_topics=num_topics,
             id2word=dct,
             chunksize=2000,
-            passes=5,
+            passes=50,
             kappa=.1,
             minimum_probability=0.01,
             w_max_iter=300,
@@ -50,29 +51,55 @@ if False:
             normalize=True,
             random_state=42
         )
+        print("Finished training nmf model")
 
-        output = model.top_topics(corpus, coherence='u_mass', topn=20)
-        topicScores = [item[1] for item in output]
-        avgScore = 0
-        for score in topicScores:
-            avgScore += score
-        avgScoreArr.append(avgScore/num_topics)
-        topicScoreArr.append(topicScores)
-        print(avgScore, avgScore/num_topics)
+        # MANUAL APPROACH, CoherenceModel below does the same
+        # output = model.top_topics(corpus, texts=minutes, coherence='c_v', topn=20)
+        # topicScores = [item[1] for item in output]
+        # avgScore = 0
+        # for score in topicScores:
+        #     avgScore += score
+        # avgScoreArr.append(avgScore/num_topics)
+        # topicScoreArr.append(topicScores)
+        # print(avgScore, avgScore/num_topics)
 
-    pickle.dump(topicScoreArr, open("topicCoherenceArr", "wb"))
+        print("Starting to apply coherence model")
 
-topics = range(1, 20, 1)
+        cm = CoherenceModel(
+            model=model,
+            corpus=transtfidf,
+            texts=minutes,
+            dictionary=dct,
+            coherence='u_mass'
+        )
+        coherenceScoreAlt.append(round(cm.get_coherence(), 5))
 
-topicScoreArr = pickle.load(open("topicCoherenceArr", "rb"))
+        # print("Finished using coherence model, next iteration")
 
-avgScoreArr = [sum(arr)/len(arr) for arr in topicScoreArr]
-plt.plot(topics, avgScoreArr)
+    # pickle.dump(topicScoreArr, open("coherenceDump", "wb"))
+    pickle.dump(coherenceScoreAlt, open("coherenceDumpAlt", "wb"))
+
+# exit()
+
+# topicScoreArr = pickle.load(open("coherenceDump", "rb"))
+coherenceScoreAlt = pickle.load(open("coherenceDumpAlt", "rb"))
+
+# avgScoreArr = [sum(arr)/len(arr) for arr in topicScoreArr]
+# plt.plot(topics, avgScoreArr)
+# plt.xlabel("Number of topics")
+# plt.ylabel("Coherence")
+# plt.title("Average coherence score per topic")
+# plt.savefig("img/coherenceAgg.png")
+# plt.clf()
+
+plt.plot(range(1, 21, 1), coherenceScoreAlt)
 plt.xlabel("Number of topics")
 plt.ylabel("Coherence")
-plt.title("Average coherence score per topic")
-plt.savefig("img/coherenceAgg.png")
+plt.title("Coherence score using gensim's CoherenceModel")
+plt.savefig("img/coherenceAlt.png")
 plt.clf()
+
+exit()
 
 # Fill missing values
 dataNew = []
@@ -100,6 +127,7 @@ plt.savefig("img/coherenceIndividual.png")
 exit()
 
 
+# LDA no longer needed!
 def compute_coherence_values(dictionary, corpus, texts, limit, start=2, step=1):
     """
     Compute c_v coherence for various number of topics
