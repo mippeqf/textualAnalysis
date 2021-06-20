@@ -12,8 +12,9 @@ from pprint import pprint
 from functools import reduce
 import matplotlib.pyplot as plt
 from gensim.models.coherencemodel import CoherenceModel
+import csv
 
-logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+# logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 # Compute coherence scores, skipped this section for debugging the plotting section
 # Alt method with CoherenceModel is based on https://towardsdatascience.com/topic-modeling-articles-with-nmf-8c6b2a227a45
@@ -51,17 +52,19 @@ if True and __name__ == '__main__':
             normalize=True,
             random_state=42
         )
-        print("Finished training nmf model")
+        print("Saving nmf model")
 
-        # MANUAL APPROACH, CoherenceModel below does the same
-        # output = model.top_topics(corpus, texts=minutes, coherence='c_v', topn=20)
-        # topicScores = [item[1] for item in output]
-        # avgScore = 0
-        # for score in topicScores:
-        #     avgScore += score
-        # avgScoreArr.append(avgScore/num_topics)
-        # topicScoreArr.append(topicScores)
-        # print(avgScore, avgScore/num_topics)
+        model.save("models/nmf"+str(num_topics))
+
+        # MANUAL APPROACH, CoherenceModel below does the same, but only provides the aggregated values
+        output = model.top_topics(corpus=transtfidf, texts=minutes, coherence='u_mass', topn=20)
+        topicScores = [item[1] for item in output]
+        avgScore = 0
+        for score in topicScores:
+            avgScore += score
+        avgScoreArr.append(avgScore/num_topics)
+        topicScoreArr.append(topicScores)
+        print(avgScore, avgScore/num_topics)
 
         print("Starting to apply coherence model")
 
@@ -76,21 +79,21 @@ if True and __name__ == '__main__':
 
         # print("Finished using coherence model, next iteration")
 
-    # pickle.dump(topicScoreArr, open("coherenceDump", "wb"))
+    pickle.dump(topicScoreArr, open("coherenceDump", "wb"))
     pickle.dump(coherenceScoreAlt, open("coherenceDumpAlt", "wb"))
 
-# exit()
+exit()
 
-# topicScoreArr = pickle.load(open("coherenceDump", "rb"))
+coherenceScore = pickle.load(open("coherenceDump", "rb"))
 coherenceScoreAlt = pickle.load(open("coherenceDumpAlt", "rb"))
 
-# avgScoreArr = [sum(arr)/len(arr) for arr in topicScoreArr]
-# plt.plot(topics, avgScoreArr)
-# plt.xlabel("Number of topics")
-# plt.ylabel("Coherence")
-# plt.title("Average coherence score per topic")
-# plt.savefig("img/coherenceAgg.png")
-# plt.clf()
+avgScoreArr = [sum(arr)/len(arr) for arr in coherenceScore]
+plt.plot(range(1, 21, 1), avgScoreArr)
+plt.xlabel("Number of topics")
+plt.ylabel("Coherence")
+plt.title("Average coherence score per topic")
+plt.savefig("img/coherenceManual.png")
+plt.clf()
 
 plt.plot(range(1, 21, 1), coherenceScoreAlt)
 plt.xlabel("Number of topics")
@@ -99,30 +102,37 @@ plt.title("Coherence score using gensim's CoherenceModel")
 plt.savefig("img/coherenceAlt.png")
 plt.clf()
 
-exit()
-
 # Fill missing values
 dataNew = []
-for vals in topicScoreArr:
+for vals in coherenceScore:
     newVals = vals
-    for j in range(0, 20-len(vals)):
+    for j in range(0, 21-len(vals)):
         newVals.append(None)
     dataNew.append(newVals)
-datanewnew = [[]for i in range(1, 20)]
+datanewnew = [[]for i in range(1, 21)]
 
 # Transpose dataframe
-for i in range(0, 19):
-    for j in range(0, 19):
+for i in range(0, 20):
+    for j in range(0, 20):
         datanewnew[i].append(dataNew[j][i])
 
 for i, series in enumerate(datanewnew):
-    plt.plot(topics, series)
+    plt.plot(range(1, 21, 1), series)
     plt.ylim([-2.5, -1])
     plt.xlim([1, 20])
     plt.tight_layout()
-    if i <= 16:
+    if i <= 20:
         plt.subplot(4, 5, i+1)
 plt.savefig("img/coherenceIndividual.png")
+
+with open(os.path.join(os.path.dirname(__file__), "coherenceExport.csv"), "w", newline="", encoding="utf-8") as f:
+    writer = csv.writer(f)
+    writer.writerows(dataNew)
+
+with open(os.path.join(os.path.dirname(__file__), "coherenceAggExport.csv"), "w", newline="", encoding="utf-8") as f:
+    writer = csv.writer(f)
+    for val in coherenceScoreAlt:
+        writer.writerow([val])
 
 exit()
 

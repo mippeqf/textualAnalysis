@@ -26,53 +26,14 @@ tsfill
 replace fomcdummy = 0 if missing(fomcdummy)
 
 // impact vars to 0 if missing
+gen missingtone = cond(missing(dl_nettone),1,0), before(open)
 foreach list in dl* nmf*{
 	foreach a of varlist `list'{
 		replace `a' = 0 if missing(`a')
 	}
 }
 
-// Kick lda
-// drop lda*
 	
-
-// Attempt to purge DL nettone loading from individual topic tone combinations
-// Although values differ slightly, shape of impact(residuals), regressand(spy) 
-// is precisely the same for all topics. WHY? Residuals 
-if 0{
-	foreach tone of varlist nmfnettone*{
-		reg `tone' dl_nettone, r // Doesnae matter whether to use reg or newey
-			// Only predictions are used, not SEs/CIs and that's the only point of difference (obvs)
-		predict double resid`tone', residuals
-		label var resid`tone' "`tone' Residuals"
-		replace resid`tone' = 0 if missing(link)
-		// 	impact(resid`tone'), regressand(spy)
-		// 	drop resid`tone'
-	}
-	impact(residnmfnettone*), regressand(spy)
-	exit
-
-	// Plot residuals - graphically independent!
-	graph drop _all
-	foreach var of varlist residnmfnettone*{
-		replace `var' = . if missing(link)
-		tsline `var', name(`var') yline(0) 
-		local graphs "`graphs' `var'"
-	}
-	graph combine `graphs', title("Topic on NaiveTone Residuals") iscale(0.5)
-	graph export ".\img\topicToneResiduals.png", replace
-	
-	// Test relationship of topic-tone residuals among one another and to dl_nettone
-	// Result: not related to dl_nettone but related among each other
-	eststo clear
-	forvalues i = 1/7{
-		local next = `i'+1
-		quietly eststo: reg residnmfnettone`i' residnmfnettone`next'
-		quietly eststo: reg residnmfnettone`i' dl_nettone
-	}
-	esttab, r2 nocons
-}
-
 exit
 
 // ---------------------------------
@@ -80,29 +41,61 @@ exit
 // ---------------------------------
 
 // PreReleaseVolatilityDrift
-impact V, regressand(V) max(200) step(10) lag
+impact V, regressand(V) max(10) step(1) lag
 graph export ".\img\pred\PreReleaseVolatilityDrift.png", replace
+
+exit
+
 
 // Naive tone predictions 
 	// DO NOT COMBINE WITH ROUTINE BELOW!! Otherwise you'd control for every other naive tone in the 
 	// prediction regressions, but I want them standalone!
-local depset = "spy bond vix" // dep for dependent variable
-local controls = ""
+local depset = "spy" // dep for dependent variable
+local controls = "missingtone"
+order dl_nettone dl_pos dl_neg dl_uncert
 foreach dep in `depset'{
 	local deplabel: var label `dep'
 	local graphs = ""
 	graph drop _all
 	foreach var of varlist dl_*{
-		quietly impact `var', regressand(`dep') controls(`controls') keepgraph
+		quietly impact `var', regressand(`dep') controls(`controls') keepgraph max(250) step(10)
 		local graphs "`graphs' `var'"
 	}
-	graph combine `graphs', iscale(0.5) title("Predicting `deplabel' with naive tone") subtitle("Controls: `controls'")
-	graph export "./img/pred/naiveON`dep'.png", replace
+	graph combine `graphs', iscale(0.5) title("Predicting `deplabel' with naive tone") //subtitle("Controls: `controls'")
+	graph export "./img/pred/`dep'ONnaive.png", replace
 }
 
+exit
 
-local depset = "spy bond vix" // dep for dependent variable
-local controls = ""
+
+// Topic-tone predictions - no tone controls
+local depset = "spy" // dep for dependent variable
+local controls = "missingtone"
+local topicset = "nmfnet nmfpos nmfneg nmfuncert"
+foreach dep in `depset'{
+	local deplabel: var label `dep'
+	foreach topic in `topicset'{
+		local graphs = ""
+		graph drop _all
+		foreach var of varlist `topic'*{
+			quietly impact `var', regressand(`dep') controls(`controls') keepgraph notopiccontrol max(250) step(10)
+			local graphs "`graphs' `var'"
+		}
+		graph combine `graphs', iscale(0.5) title("Predicting `deplabel' with `topic'") //subtitle("Controls: `controls'")
+		graph export "./img/pred/`dep'ON`topic'.png", replace
+	}
+}
+
+exit
+
+
+//---------------------------------------------
+// STUFF BELOW USES CONTROLS
+// --------------------------------------------
+
+// Topic-tone predictions - CONTROL: respective naive tone
+local depset = "spy" // dep for dependent variable
+local controls = "missingtone"
 local topicset = "nmfnettone nmfuncert nmfneg nmfpos"
 foreach dep in `depset'{
 	local deplabel: var label `dep'
@@ -110,15 +103,53 @@ foreach dep in `depset'{
 		local graphs = ""
 		graph drop _all
 		foreach var of varlist `topic'*{
-			quietly impact `var', regressand(`dep') controls(`controls') keepgraph notopiccontrol
+			local naive = subinstr("`topic'","nmf","dl_",1)
+			di "`var' `topic' `naive'"
+			quietly impact `var', regressand(`dep') controls("`naive' `controls'") keepgraph notopiccontrol
 			local graphs "`graphs' `var'"
 		}
-		graph combine `graphs', iscale(0.5) title("Predicting `deplabel' with `topic'") subtitle("Controls: `controls'")
-		graph export "./img/pred/`topic'ON`dep'.png", replace
+		graph combine `graphs', iscale(0.5) title("Predicting `deplabel' with `topic'") subtitle("Controls: naive tone and `controls'")
+		graph export "./img/pred/`dep'ON`topic'ALT.png", replace
 	}
 }
 
 exit
+
+
+// Topic-tone predictions - CONTROL: macro trends
+
+local depset = "spy" // dep for dependent variable
+local controls = "missingtone interest unemployment recession"
+local topicset = "nmfnettone nmfuncert nmfneg nmfpos"
+foreach dep in `depset'{
+	local deplabel: var label `dep'
+	foreach topic in `topicset'{
+		local graphs = ""
+		graph drop _all
+		foreach var of varlist `topic'*{
+			di "`var' `topic' `naive'"
+			quietly impact `var', regressand(`dep') controls(`controls') keepgraph notopiccontrol
+			local graphs "`graphs' `var'"
+		}
+		graph combine `graphs', iscale(0.5) title("Predicting `deplabel' with `topic'") subtitle("Controls: `controls'")
+		graph export "./img/pred/`dep'ON`topic'MACRO.png", replace
+	}
+}
+
+exit
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

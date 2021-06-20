@@ -1,0 +1,43 @@
+\begin{table}[htbp]\centering
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{2}{c}}
+\hline\hline
+            &\multicolumn{1}{c}{est1}&\multicolumn{1}{c}{est2}\\
+\hline
+nmfprop1    &      -1.102         &      -0.803         \\
+            &     (-0.77)         &     (-0.62)         \\
+[1em]
+nmfprop2    &      -1.079         &      -0.781         \\
+            &     (-0.75)         &     (-0.60)         \\
+[1em]
+nmfprop3    &      -1.134         &      -0.826         \\
+            &     (-0.79)         &     (-0.63)         \\
+[1em]
+nmfprop4    &      -1.086         &      -0.797         \\
+            &     (-0.75)         &     (-0.61)         \\
+[1em]
+nmfprop5    &      -1.112         &      -0.812         \\
+            &     (-0.77)         &     (-0.62)         \\
+[1em]
+nmfprop6    &      -1.076         &      -0.772         \\
+            &     (-0.74)         &     (-0.59)         \\
+[1em]
+interest    &                     &      -0.000         \\
+            &                     &     (-0.00)         \\
+[1em]
+unemployment&                     &       0.000         \\
+            &                     &      (0.83)         \\
+[1em]
+recession   &                     &      -0.004         \\
+            &                     &     (-1.19)         \\
+[1em]
+\_cons      &       1.095         &       0.795         \\
+            &      (0.76)         &      (0.61)         \\
+\hline
+\(N\)       &         225         &         224         \\
+adj. \(R^{2}\)&      -0.004         &       0.006         \\
+\hline\hline
+\multicolumn{3}{l}{\footnotesize \textit{t} statistics in parentheses}\\
+\multicolumn{3}{l}{\footnotesize \sym{*} \(p<0.05\), \sym{**} \(p<0.01\), \sym{***} \(p<0.001\)}\\
+\end{tabular}
+\end{table}

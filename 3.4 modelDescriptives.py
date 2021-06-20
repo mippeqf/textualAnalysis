@@ -11,11 +11,7 @@ import gensim.utils
 from envVars import NUM_TOPICS
 import pickle
 import pandas as pd
-
-#  TODO
-# - Proportion evolution (see Medium article)
-# - Wordcloud by topic (as list with according topic weights in second column)
-# - Use Schmeling Wagner as a guide for wordcloud, they're pretty meticulous
+import math
 
 # TODO Several useful descriptive insight methods in this article
 # https://www.machinelearningplus.com/nlp/topic-modeling-gensim-python/#15visualizethetopicskeywords
@@ -23,27 +19,6 @@ import pandas as pd
 
 if not os.path.exists("img"):
     os.mkdir("img")
-
-#####################################################################################
-# Fig 1 JeWu - intertemporal progression of topic mixture
-#####################################################################################
-if False:
-    minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "dataExport"), "rb"))
-    df = pd.DataFrame(minutes)
-    df = df[["release", "ldaProp1", "ldaProp2", "ldaProp3", "ldaProp4", "ldaProp5", "ldaProp6", "ldaProp7", "ldaProp8"]]
-    df.plot.area(stacked=True, x="release").legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
-    plt.title("LDA topic proportions stacked")
-    plt.savefig("img/ldaPropStacked.png")
-    plt.clf()
-
-minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "dataExport"), "rb"))
-df = pd.DataFrame(minutes)
-df = df[["release", *["nmfProp"+str(i) for i in range(1, NUM_TOPICS+1)]]]
-df.plot.area(stacked=True, x="release").legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
-plt.title("NMF topic proportions stacked")
-plt.tight_layout()
-plt.savefig("img/nmfPropStacked.png")
-plt.clf()
 
 #####################################################################################
 # Wordcloud by topic
@@ -67,16 +42,75 @@ if False:
     plt.savefig(f"img/lda_topic.png")
     plt.clf()
 
+labels = {1: "Economic activity", 2: "Policy action", 3: "Economic outlook", 4: " Employment", 5: "Financial Markets", 6: "Inflation"}
 for topic in range(0, NUM_TOPICS):
     termsnmf = nmf.show_topic(topic, topn=50)
     # Model returns list of tuples, wordcloud wants a dictionary instead
     wordcloudnmf = WordCloud(background_color="white").generate_from_frequencies(dict(termsnmf))
-    plt.subplot(3, 3, topic+1)
+    plt.subplot(3, 2, topic+1)
     plt.imshow(wordcloudnmf)
     plt.axis("off")
-    plt.title("Topic"+str(topic+1))
-plt.suptitle("NMF wordclouds by topic")
+    plt.title(str(topic+1)+" - "+labels[topic+1])
+plt.tight_layout()
+# plt.suptitle("NMF wordclouds by topic")
 plt.savefig(f"img/nmf_topic.png")
+plt.clf()
+
+if False:
+    # GENERATE WORDCLOUDS FOR SUBJECTIVE MODEL SELECTION
+    for numtopics in range(1, 21):
+        nmf = Nmf.load("models/nmf"+str(numtopics))
+        rows = math.ceil(math.sqrt(numtopics))
+        cols = math.ceil(numtopics/rows)
+        for topic in range(1, numtopics+1):
+            print("numtopics", numtopics, "rows", rows, "cols", cols, "topic", topic)
+            termsnmf = nmf.show_topic(topic-1, topn=50)
+            wordcloudnmf = WordCloud(background_color="white").generate_from_frequencies(dict(termsnmf))
+            plt.subplot(rows, cols, topic)
+            plt.imshow(wordcloudnmf)
+            plt.axis("off")
+            plt.title("Topic"+str(topic))
+        plt.tight_layout()
+        # plt.suptitle("NMF wordclouds by topic")
+        plt.savefig(f"img/nmfClouds/nmf"+str(numtopics)+".png")
+        plt.show()
+        plt.clf()
+
+
+#####################################################################################
+# Fig 1 JeWu - intertemporal progression of topic mixture
+#####################################################################################
+if False:
+    minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "dataExport"), "rb"))
+    df = pd.DataFrame(minutes)
+    df = df[["release", "ldaProp1", "ldaProp2", "ldaProp3", "ldaProp4", "ldaProp5", "ldaProp6", "ldaProp7", "ldaProp8"]]
+    df.plot.area(stacked=True, x="release").legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
+    plt.title("LDA topic proportions stacked")
+    plt.savefig("img/ldaPropStacked.png")
+    plt.clf()
+
+minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "dataExport"), "rb"))
+
+df = pd.DataFrame(minutes)
+df = df[["release", *["nmfProp"+str(i) for i in range(1, NUM_TOPICS+1)]]]
+print(df.head())
+df.rename(columns={"nmfProp1": "Economic activity", "nmfProp2": "Policy action", "nmfProp3": "Economic Outlook",
+                   "nmfProp4": "Employment", "nmfProp5": "Financial Markets", "nmfProp6": "Inflation"}, inplace=True)
+order = [5, 4, 3, 2, 1, 0]
+df.plot.area(stacked=True, x="release")
+ax = plt.subplot(111)
+box = ax.get_position()
+plt.legend(labels=["asdf" for i in range(0, 6)])
+ax.set_position([box.x0+box.width*0.01, box.y0 + box.height * 0.03, box.width*0.99, box.height * 0.97])
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), ncol=3)
+# plt.title("NMF topic proportions stacked")
+plt.tight_layout()
+plt.margins(x=0, y=0, tight=True)
+plt.ylim(0, 1)
+# plt.xlabel("Publication date")
+# plt.ylabel("Topic proportion")
+plt.xlabel("")
+plt.savefig("img/nmfPropStacked.png")
 plt.clf()
 
 exit()

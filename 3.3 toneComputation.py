@@ -8,13 +8,12 @@
 # Word complexity, sentence length and Jaccard similarity are all aditional tools that can be used, but
 # are not necessary for tonal analysis
 #
-# Use only modern Minutes for now, if there's enough time, see if reliable release schedule of
+# Use only modern Minutes for now. If there's enough time, see if reliable release schedule of
 # Minutes of Actions (67-93) can be obtained.
 
 # pysentiment don't give access to uncertainty score!
 # Copy query structure and implement yourself!
 # import pysentiment2 as ps
-from bs4 import BeautifulSoup
 import csv
 import pickle
 import pandas as pd
@@ -112,7 +111,6 @@ for row in tqdm(minutes):
         docLevelPosScore += posScore*paraProp
         poscounter += posScore
         negcounter += negScore
-        poscounter += posScore
         uncertcounter += uncertScore
 
     # COMPUTE FINAL DOCUMENT-LEVEL METRICS

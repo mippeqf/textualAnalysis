@@ -1,5 +1,9 @@
+// File authored myself
+// Requires package "coefplot" to be installed
+
 capture program drop impact
 
+*! version 1.1.0  June2021  Markus Brobeil
 program define impact
 	syntax varlist, regressand(varlist min=1 max=1) [controls(varlist min=1) max(integer 500) step(integer 30) lag keepgraph notopiccontrol]
 	// To implement min&max limit on varlist = 1 if lag option is specified!
@@ -31,8 +35,10 @@ program define impact
 		matrix colnames A = `cnames'
 		forvalues i = `min'(`step')`max' {
 			if "`lag'" == ""{
+				capture drop tmp
+				gen tmp = S`i'.F`i'.`regressand'/`regressand'
 				if "`notopiccontrol'" == ""{
-					quietly newey S`i'.F`i'.`regressand' `varlist' `controls', lag(`maxlag')
+					quietly newey tmp `varlist' `controls', lag(`maxlag')
 					// Fi : lead the dependent variable by i periods
 					// Si : Difference between var in t and t-i
 					// Both combined give the the difference between t and t+i
@@ -40,7 +46,7 @@ program define impact
 					// Always start with 1 as min, with 0 you're using the scalar 0 as a regressor I believe
 				}
 				else{
-					quietly newey S`i'.F`i'.`regressand' `controls', lag(`maxlag')
+					quietly newey tmp `controls', lag(`maxlag')
 				}
 				di as text "Iteration " (`i'-1)/`step'+1 ": Computing `topiclabel' impact onto `regressandlabel' differential on day " `i' " after event"
 // 				di as text "S`i'.F`i'.`regressand' `varlist'"
@@ -52,7 +58,7 @@ program define impact
 // 				matlist A
 			} 
 			else { 
-				quietly newey `regressand' L`i'.`varlist', lag(`maxlag')
+				quietly newey `regressand' L(1(`step')`i').`varlist', lag(`maxlag')
 				di as text "Iteration " (`i'-1)/`step'+1 ": Computing `topiclabel' impact onto `regressandlabel' level on day " `i' " before event"
 // 				di as text "`regressand' L`i'.`varlist'"
 // 				matlist r(table)
@@ -83,6 +89,7 @@ program define impact
 	else{
 		graph combine `graphs', title("Predicting `regressandlabel'") subtitle("Controls: `controls'") iscale(0.75)
 	}
+	capture drop temp
 end
 
 // Efficiency could perhaps be improved by grabbing all coefficients at once in the inner loop.

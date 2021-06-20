@@ -22,6 +22,24 @@ drop release
 // gen dl_uncert_change = dl_uncert[_n] - dl_uncert[_n-1], after(dl_uncert)
 // Delete two of three observations referring to the same document
 drop if strpos(link, "#") // Specific to this dataset!
+foreach var of varlist nmf*1{
+	label var `var' "Economic activity"
+}
+foreach var of varlist nmf*2{
+	label var `var' "Policy action"
+}
+foreach var of varlist nmf*3{
+	label var `var' "Economic outlook"
+}
+foreach var of varlist nmf*4{
+	label var `var' "Unemployment"
+}
+foreach var of varlist nmf*5{
+	label var `var' "Financial Markets"
+}
+foreach var of varlist nmf*6{
+	label var `var' "Inflation"
+}
 save "./data/tone.dta", replace
 
 
@@ -34,14 +52,14 @@ drop date dividends stocksplits
 rename date1 date
 
 gen R_24 = (close-close[_n-1])/close[_n-1], after(close)
-label var R_24 "Close-close diff"
+label var R_24 "R_{24}"
 gen R_intra = (close-open)/open, after(R_24)
-label var R_intra "Intraday return, close-open diff"
+label var R_intra "R_{intra}"
 gen vola_temp = high-low, after(close)
 sum(vola_temp)
 gen V = (high-low)/r(mean), after(vola_temp)
 drop vola_temp
-label var V "Intraday volatility"
+label var V "V"
 // by link: gen dl_nettone_change = dl_nettone[_n]-dl_nettone[_n-1] if _merge==3, after(dl_nettone)
 rename close spy
 label var spy "S&P500"
@@ -67,7 +85,7 @@ format %tdDD/NN/CCYY date1
 drop date
 rename date1 date
 rename dgs10 yield
-label var yield "Treasury yield"
+label var yield "10-year treasury yield"
 save ".\statics\yield.dta", replace
 
 // Parse bofa bond index
@@ -90,6 +108,7 @@ merge 1:1 date using ".\statics\yield.dta", nogen
 merge 1:1 date using ".\statics\bond.dta", nogen
 
 gen fomcdummy=cond(missing(year),0,1)
+label var fomcdummy "Release day dummy"
 label var dl_nettone "naiveNettone"
 label var dl_uncert "naiveUncert"
 label var dl_pos "naivePos"
@@ -113,7 +132,6 @@ tsset trading_days
 gen month = mofd(date), after(date)
 
 save "./data/main.dta", replace
-
 
 // -----------------------------------------------------------------
 // Prepare monthly vars (macro)
