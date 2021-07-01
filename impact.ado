@@ -3,10 +3,10 @@
 
 capture program drop impact
 
-*! version 1.1.0  June2021  Markus Brobeil
+*! version 1.2.0  June2021  Markus Brobeil
 program define impact
-	syntax varlist, regressand(varlist min=1 max=1) [controls(varlist min=1) max(integer 500) step(integer 30) lag keepgraph notopiccontrol]
-	// To implement min&max limit on varlist = 1 if lag option is specified!
+	syntax varlist, regressand(varlist min=1 max=1) [controls(varlist min=1) max(integer 500) step(integer 30) lag keepgraph white] [multi]
+	// To implement: min&max limit on varlist = 1 if lag option is specified!
 // 	macro drop _all // Not a good idea, drops the input variables
 	set graphics off
 	if "`keepgraph'" == ""{
@@ -37,16 +37,29 @@ program define impact
 			if "`lag'" == ""{
 				capture drop tmp
 				gen tmp = S`i'.F`i'.`regressand'/`regressand'
-				if "`notopiccontrol'" == ""{
+				if "`multi'" == "multi"{
+					di "MULTI"
 					quietly newey tmp `varlist' `controls', lag(`maxlag')
 					// Fi : lead the dependent variable by i periods
 					// Si : Difference between var in t and t-i
 					// Both combined give the the difference between t and t+i
 					// Not sure whether double TS operators work correctly, let's hope they do
-					// Always start with 1 as min, with 0 you're using the scalar 0 as a regressor I believe
+					// Always start with 1 as min, with 0 you're using the scalar 0 as a regressor I believe,
+					// which messes up the resulting graph
 				}
 				else{
-					quietly newey tmp `controls', lag(`maxlag')
+					di "SINGULAR"
+					if "`white'" == ""{
+						di "NOWHITE"
+						quietly newey tmp `topic' `controls', lag(`maxlag')
+					}
+					else {
+						di "WHITE"
+						preserve
+						drop if fomcdummy==0
+						quietly reg tmp `topic' `controls', r
+						restore
+					}
 				}
 				di as text "Iteration " (`i'-1)/`step'+1 ": Computing `topiclabel' impact onto `regressandlabel' differential on day " `i' " after event"
 // 				di as text "S`i'.F`i'.`regressand' `varlist'"

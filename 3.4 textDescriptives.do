@@ -20,7 +20,7 @@ label var paracnt "Paragraph count"
 tsline paracnt, yaxis(1) lcolor(maroon) || tsline wordcntfiltered, yaxis(2) lcolor(navy) legend(order(2 "Words (filtered)" 1 "Paragraphs")) 
 graph export ".\img\desc\totalNumberWords.png", as(png) replace
 
-// ABSOLUTE TONE FIGURE
+// ABSOLUTE SENTIMENT WORD COUNT FIGURE
 gen rectemp = recession*300-6
 twoway (area rectemp date, color(gs14) base(-6)) (tsline poscnt negcnt uncertcnt, ///
 lcolor(forest_green cranberry navy)), legend(region(lwidth(0)) label(1 "Recession") label(2 "Positive") label(3 "Negative") label(4 "Uncertain")) ///
@@ -28,7 +28,7 @@ lcolor(forest_green cranberry navy)), legend(region(lwidth(0)) label(1 "Recessio
 graph export ".\img\desc\abscontentCounts.png", as(png) replace
 drop rectemp
 
-// RELATIVE TONE FIGURE
+// RELATIVE SENTIMENT FIGURE
 gen relpos = poscnt/wordcntfiltered
 gen relneg = negcnt/wordcntfiltered
 gen relunc = uncertcnt/wordcntfiltered
@@ -54,3 +54,33 @@ capture drop rectemp
 gen rectemp = recession*15-6
 twoway (area rectemp date, color(gs14) base(-6)) (tsline dl_nettone dl_uncert dl_pos dl_neg, lcolor(navy orange forest_green cranberry) legend(region(lwidth(0)) label(1 "Recession"))), ytitle("Tone score") xtitle("") yline(0) 
 graph export ".\img\desc\naiveToneProg.png", as(png) replace
+
+// TOPIC-TONE FIGURE
+set graphics off
+local tones "nmfnet nmfpos nmfneg nmfuncert"
+graph drop _all
+local graphs = ""
+foreach var in `tones'{
+	di "`var'"
+	local max 0
+	local min 0
+	foreach tone of varlist `var'*{
+		sum `tone'
+		if `r(max)' > `max'{
+			local max `r(max)'
+		}
+		if `r(min)' < `min'{
+			local min `r(min)'
+		}
+		di "`max' `min'"
+	}
+	di "`max' `min'"
+	capture drop rectemp
+	gen rectemp = (recession)*(`max'-`min')+`min'
+	twoway (area rectemp date, color(gs14) base(`min')) (tsline `var'*, lcolor(navy orange forest_green cranberry) legend(region(lwidth(0)) label(1 "Recession"))), ytitle("Tone score") xtitle("") yline(0) name(`var') title(`var')
+	local graphs "`graphs' `var'"
+	di "`graphs'"
+}
+set graphics on
+graph combine `graphs', iscale(0.5)
+graph export ".\img\desc\topicToneProg.png", as(png) replace
