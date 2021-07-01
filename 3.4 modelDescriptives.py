@@ -24,24 +24,13 @@ if not os.path.exists("img"):
 # Wordcloud by topic
 #####################################################################################
 
-lda = LdaModel.load("models/lda")
+# Load model(s)
+# lda = LdaModel.load("models/lda")
 dct = gensim.utils.SaveLoad.load("models/dct")
 corpus = gensim.corpora.MmCorpus("models/corpus")
 nmf = Nmf.load("models/nmf")
 
-if False:
-    for topic in range(0, NUM_TOPICS):
-        termslda = lda.show_topic(topic, topn=50)  # get_topic_terms would return words as dict IDs, not strings
-        # Model returns list of tuples, wordcloud wants a dictionary instead
-        wordcloudlda = WordCloud(background_color="white").generate_from_frequencies(dict(termslda))
-        plt.subplot(3, 3, topic+1)
-        plt.imshow(wordcloudlda)
-        plt.axis("off")
-        plt.title("Topic"+str(topic+1))
-    plt.suptitle("LDA wordclouds by topic")
-    plt.savefig(f"img/lda_topic.png")
-    plt.clf()
-
+# Generate word cloud for final model
 labels = {1: "Economic activity", 2: "Policy action", 3: "Economic outlook", 4: " Employment", 5: "Financial Markets", 6: "Inflation"}
 for topic in range(0, NUM_TOPICS):
     termsnmf = nmf.show_topic(topic, topn=50)
@@ -56,6 +45,8 @@ plt.tight_layout()
 plt.savefig(f"img/nmf_topic.png")
 plt.clf()
 
+# Generate word clouds for all 20 topics and save to folder img/nmfClouds
+# Not needed for the thesis, only to subjectively select the best model
 if False:
     # GENERATE WORDCLOUDS FOR SUBJECTIVE MODEL SELECTION
     for numtopics in range(1, 21):
@@ -76,18 +67,11 @@ if False:
         plt.show()
         plt.clf()
 
+# exit()
 
 #####################################################################################
-# Fig 1 JeWu - intertemporal progression of topic mixture
+# intertemporal progression of topic mixture
 #####################################################################################
-if False:
-    minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "dataExport"), "rb"))
-    df = pd.DataFrame(minutes)
-    df = df[["release", "ldaProp1", "ldaProp2", "ldaProp3", "ldaProp4", "ldaProp5", "ldaProp6", "ldaProp7", "ldaProp8"]]
-    df.plot.area(stacked=True, x="release").legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
-    plt.title("LDA topic proportions stacked")
-    plt.savefig("img/ldaPropStacked.png")
-    plt.clf()
 
 minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "dataExport"), "rb"))
 
@@ -114,6 +98,9 @@ plt.savefig("img/nmfPropStacked.png")
 plt.clf()
 
 exit()
+
+# Stuff in the following is not used anymore
+
 #################################################################
 # LDAvis
 #################################################################
@@ -123,3 +110,26 @@ exit()
 ldaDisp = gensimvis.prepare(lda, corpus, dct, sort_topics=False)
 pyLDAvis.save_html(ldaDisp, "ldavistest.html")
 os.startfile(".\ldavistest.html")
+
+
+if False:
+    for topic in range(0, NUM_TOPICS):
+        termslda = lda.show_topic(topic, topn=50)  # get_topic_terms would return words as dict IDs, not strings
+        # Model returns list of tuples, wordcloud wants a dictionary instead
+        wordcloudlda = WordCloud(background_color="white").generate_from_frequencies(dict(termslda))
+        plt.subplot(3, 3, topic+1)
+        plt.imshow(wordcloudlda)
+        plt.axis("off")
+        plt.title("Topic"+str(topic+1))
+    plt.suptitle("LDA wordclouds by topic")
+    plt.savefig(f"img/lda_topic.png")
+    plt.clf()
+
+if False:
+    minutes = pickle.load(open(os.path.join(os.path.dirname(__file__), "data", "dataExport"), "rb"))
+    df = pd.DataFrame(minutes)
+    df = df[["release", "ldaProp1", "ldaProp2", "ldaProp3", "ldaProp4", "ldaProp5", "ldaProp6", "ldaProp7", "ldaProp8"]]
+    df.plot.area(stacked=True, x="release").legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
+    plt.title("LDA topic proportions stacked")
+    plt.savefig("img/ldaPropStacked.png")
+    plt.clf()

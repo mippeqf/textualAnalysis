@@ -88,6 +88,28 @@ foreach dep in `depset'{
 
 exit
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//---------------------------------------------
+// ARCHIVE - everything below is not used, but kept for legacy
+// --------------------------------------------
+
+
 // Robustness test with white SEs and no fomcdummy - unambiguous matching approach
 local depset = "spy" // dep for dependent variable
 local controls = ""
@@ -110,7 +132,7 @@ foreach dep in `depset'{
 
 exit
 
-// White SEs in table form
+// White SEs in table form - not used
 local min 1
 local step 50
 local max 250
@@ -136,7 +158,7 @@ exit
 
 
 //---------------------------------------------
-// STUFF BELOW USES CONTROLS
+// STUFF BELOW USES CONTROLS - not used in thesis
 // --------------------------------------------
 
 // Topic-tone predictions - CONTROL: respective naive tone
