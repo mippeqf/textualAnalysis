@@ -4,4 +4,4 @@ import yfinance as yf
 spy = yf.Ticker("SPY")
 data = spy.history(period="max")
 print(type(data))
-data.to_csv("data/spy.csv", sep=";")
+data.to_csv("statics/spy.csv", sep=";")

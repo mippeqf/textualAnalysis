@@ -82,7 +82,7 @@ if True and __name__ == '__main__':
     pickle.dump(topicScoreArr, open("coherenceDump", "wb"))
     pickle.dump(coherenceScoreAlt, open("coherenceDumpAlt", "wb"))
 
-exit()
+# exit()
 
 coherenceScore = pickle.load(open("coherenceDump", "rb"))
 coherenceScoreAlt = pickle.load(open("coherenceDumpAlt", "rb"))
@@ -136,6 +136,8 @@ with open(os.path.join(os.path.dirname(__file__), "coherenceAggExport.csv"), "w"
 
 exit()
 
+
+# Stuff below here is most likely not in active use anymore
 
 # LDA no longer needed!
 def compute_coherence_values(dictionary, corpus, texts, limit, start=2, step=1):
